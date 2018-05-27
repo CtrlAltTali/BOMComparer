@@ -120,7 +120,7 @@ namespace BOMComparer
             results.Tables[0].TableName = "diff";
             results.Tables.Add(material);
             results.Tables[1].TableName = "material";
-            string resultpath = SQLhelper.ExportFile(results, "results.xlsx", true, newDirpath);
+            string resultpath = SQLhelper.ExportFile(results, "Comparison_Report.xlsx", true, newDirpath);
         }
     }
 }

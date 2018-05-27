@@ -19,10 +19,10 @@ namespace BOMComparer
         public static bool compared = false;
         public static string ExportFile(System.Data.DataSet dtset, string filename, bool toinform, string destinationpath)
         {
-            Random r = new Random();
+            //Random r = new Random();
             string prefix = filename.Substring(0, filename.LastIndexOf('.'));
             string suffix = filename.Substring(filename.LastIndexOf('.'));
-            string newpath = destinationpath + "\\" + prefix + r.Next() + suffix;
+            string newpath = destinationpath + "\\" + prefix + "_new" + suffix;
             CreateExcelFile.CreateExcelDocument(dtset, newpath);
             if (toinform)
                 MessageBox.Show("You can find the new file in: " + newpath);

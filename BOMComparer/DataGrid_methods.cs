@@ -274,8 +274,9 @@ namespace BOMComparer
 
                 string items = datagrid.Rows[i].Cells[Son_PN_Items].Value.ToString();
                 string qtyVal = datagrid.Rows[i].Cells[quantity].Value.ToString();
+                string location = datagrid.Rows[i].Cells[Location].Value.ToString(); ;
                 //if items/stx_num is not empty...
-                if (qtyVal != "" && items != "")
+                if (qtyVal != "" && items != "" && location!=null && location!="")
                 {
                     //store the row objects in an array
                     for (int k = 0; k < rowobjects.Length; k++)
@@ -283,8 +284,8 @@ namespace BOMComparer
                         rowobjects[k] = datagrid.Rows[i].Cells[k].Value.ToString();
                     }
                     qtyInRow = double.Parse(rowobjects[quantity]);
-                    
-                    rowobjects[Location] = datagrid.Rows[i].Cells[Location].Value.ToString();
+
+                    rowobjects[Location] = location;
 
                     bool validQuantity = ValidQuantity(qtyInRow, rowobjects[Location]);
                     //string fixesitems = SearchForSpaces(items);
@@ -293,7 +294,7 @@ namespace BOMComparer
                     bool containsComma = rowobjects[Location].Contains(',');
                     bool containsDash = rowobjects[Location].Contains('-');
                     bool legalLocation = IsLegal(rowobjects[Location]);
-
+                    
 
                     if ((containsDash || containsComma) && legalLocation && validQuantity)
                     {
@@ -402,7 +403,9 @@ namespace BOMComparer
                 {
                     bool validQuantity = ValidQuantity(qtyInRow, location);
                     bool hasspaces = items.Contains("?");
-                    if (!validQuantity|| hasspaces)
+                    bool legalLocation = IsLegal(location);
+
+                    if (!validQuantity|| hasspaces || !legalLocation)
                     {
                         if (firstErrorIndex[sheetindex] == -1)
                             firstErrorIndex[sheetindex] = i;
