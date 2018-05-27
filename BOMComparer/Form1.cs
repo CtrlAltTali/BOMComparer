@@ -78,8 +78,9 @@ namespace BOMComparer
                 {
                     for (int i = 0; i < datagrid.firstErrorIndex.Length; i++)
                     {
+                        int k = datagrid.firstErrorIndex[i] + 1;
                         if (datagrid.firstErrorIndex[i] != -1)
-                            MessageBox.Show("First error in table " + tablenames[i] + " in line " + datagrid.firstErrorIndex[i]+1);
+                            MessageBox.Show("First error in table " + tablenames[i] + " in line " + k);
                     }
                     compareBTN.Enabled = false;
                 }
