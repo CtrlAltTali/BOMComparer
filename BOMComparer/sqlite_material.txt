@@ -1,0 +1,85 @@
+CREATE TABLE material AS SELECT z.*,
+                                dnb.Value
+                           FROM (
+                                    SELECT s.*,
+                                           dmb.Description
+                                      FROM (
+                                               SELECT t.*,
+                                                      ifnull(t.qty_master, 0) - ifnull(t.qty_new, 0) AS delta
+                                                 FROM (
+                                                          SELECT mb.*,
+                                                                 nb.*
+                                                            FROM (
+                                                                     SELECT sum(mb.QTY) AS qty_master,
+                                                                            mb.[Son P/N Items]
+                                                                       FROM Master_BOM mb
+                                                                      GROUP BY mb.[Son P/N Items]
+                                                                 )
+                                                                 mb
+                                                                 INNER JOIN
+                                                                 (
+                                                                     SELECT sum(nb.Quantity) AS qty_new,
+                                                                            nb.stx_num
+                                                                       FROM New_BOM nb
+                                                                      GROUP BY nb.stx_num
+                                                                 )
+                                                                 nb ON mb.[Son P/N Items] = nb.stx_num
+                                                          UNION ALL
+                                                          SELECT mb.*,
+                                                                 nb.*
+                                                            FROM (
+                                                                     SELECT sum(mb.QTY) AS qty_master,
+                                                                            mb.[Son P/N Items]
+                                                                       FROM Master_BOM mb
+                                                                      GROUP BY mb.[Son P/N Items]
+                                                                 )
+                                                                 mb
+                                                                 LEFT OUTER JOIN
+                                                                 (
+                                                                     SELECT sum(nb.Quantity) AS qty_new,
+                                                                            nb.stx_num
+                                                                       FROM New_BOM nb
+                                                                      GROUP BY nb.stx_num
+                                                                 )
+                                                                 nb ON mb.[Son P/N Items] = nb.stx_num
+                                                           WHERE nb.stx_num IS NULL
+                                                          UNION ALL
+                                                          SELECT mb.*,
+                                                                 nb.*
+                                                            FROM (
+                                                                     SELECT sum(nb.Quantity) AS qty_new,
+                                                                            nb.stx_num
+                                                                       FROM New_BOM nb
+                                                                      GROUP BY nb.stx_num
+                                                                 )
+                                                                 nb
+                                                                 LEFT OUTER JOIN
+                                                                 (
+                                                                     SELECT sum(mb.QTY) AS qty_master,
+                                                                            mb.[Son P/N Items]
+                                                                       FROM Master_BOM mb
+                                                                      GROUP BY mb.[Son P/N Items]
+                                                                 )
+                                                                 mb ON mb.[Son P/N Items] = nb.stx_num
+                                                           WHERE mb.[Son P/N Items] IS NULL
+                                                      )
+                                                      t
+                                           )
+                                           s
+                                           LEFT OUTER JOIN
+                                           (
+                                               SELECT DISTINCT mb.[Son P/N Items],
+                                                               mb.Description
+                                                 FROM Master_BOM mb
+                                           )
+                                           dmb ON dmb.[Son P/N Items] = s.[Son P/N Items]
+                                           where s.delta<>0
+                                )
+                                z
+                                LEFT OUTER JOIN
+                                (
+                                    SELECT DISTINCT nb.stx_num,
+                                                    nb.Value
+                                      FROM New_BOM nb
+                                )
+                                dnb ON dnb.stx_num = z.stx_num

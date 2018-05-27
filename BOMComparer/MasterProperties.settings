@@ -1,0 +1,24 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="BOMComparer" GeneratedClassName="MasterProperties">
+  <Profiles />
+  <Settings>
+    <Setting Name="partNumMBOM" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Son P/N Items</Value>
+    </Setting>
+    <Setting Name="ReferenceMBOM" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Location</Value>
+    </Setting>
+    <Setting Name="partNumNBOM" Type="System.String" Scope="User">
+      <Value Profile="(Default)">stx_num</Value>
+    </Setting>
+    <Setting Name="ReferenceNBOM" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Part Reference</Value>
+    </Setting>
+    <Setting Name="qtyMBOM" Type="System.String" Scope="User">
+      <Value Profile="(Default)">QTY</Value>
+    </Setting>
+    <Setting Name="qtyNBOM" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Quantity</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
