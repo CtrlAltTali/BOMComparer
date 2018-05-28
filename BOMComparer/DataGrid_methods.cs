@@ -138,6 +138,15 @@ namespace BOMComparer
             Location = TABLEFORMAT.Location;
             quantity = TABLEFORMAT.QTY;
         }
+
+        /// <summary>
+        /// checks if a location is legal
+        /// example:
+        /// legal: A1032
+        /// illegal: H463B
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
         private bool IsLegal(string str)
         {
             bool illegal = str[str.Length - 1] >= 65 && str[str.Length - 1] <= 90;
@@ -212,6 +221,11 @@ namespace BOMComparer
             }
 
         }
+        /// <summary>
+        /// replaces spaces with '?'
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns> a string with '?' instead of spaces</returns>
         public string SearchForSpaces(string str)
         {
             if (str.Contains(" "))
@@ -219,32 +233,55 @@ namespace BOMComparer
             return str;
 
         }
+
+        /// <summary>
+        /// checks that the quantity written in table is
+        /// the same as the number of locations
+        /// </summary>
+        /// <param name="expectedQuantity"></param>
+        /// <param name="locations"></param>
+        /// <returns>a boolean value indicates if the quantity is valid</returns>
         private bool ValidQuantity(double expectedQuantity, string locations)
         {
             int counted = 0;
+            //remove spaces from string
             locations = locations.Replace(" ", "");
+
+            //check if it containd dashes or colons
             if (locations.Contains("-") || locations.Contains(","))
             {
+                //if contains colons
                 if (locations.Contains(","))
-                {
+                {                    
+                    //spit the string
                     string[] locs = locations.Split(',');
                     for (int i = 0; i < locs.Length; i++)
                     {
+                        //now check if every location in array has dashes
                         if (locs[i].Contains("-"))
                         {
+                            //the length of "dashed" is the difference between the two locations
                             string[] dashed = removedash(locs[i]);
+
+                            //add the difference
                             counted += dashed.Length;
                         }
+                        //if not, then add 1
                         else
                             counted++;
                     }
                 }
+                //if not, it must conatin dashes
                 else
                 {
+                    //the length of "dashed" is the difference between the two locations
                     string[] dashed = removedash(locations);
+
+                    //add the difference
                     counted += dashed.Length;
                 }
             }
+            //if not, then add 1
             else
                 counted++;
 
@@ -389,39 +426,77 @@ namespace BOMComparer
             source.DataSource = DtSet[sheetindex].Tables[0];
             datagrid.DataSource = source;
 
-            for (int i = 0; i < datagrid.RowCount - 1; i++)
-            {
-                
-                string items = datagrid.Rows[i].Cells[Son_PN_Items].Value.ToString();
-                items = SearchForSpaces(items);
-                DtSet[sheetindex].Tables[0].Rows[i][Son_PN_Items] = items;
-                string qtyVal = datagrid.Rows[i].Cells[quantity].Value.ToString();
-                string location = datagrid.Rows[i].Cells[Location].Value.ToString();
-                qtyInRow = double.Parse(qtyVal);
-                
-                if (qtyVal != "" && items != "")
-                {
-                    bool validQuantity = ValidQuantity(qtyInRow, location);
-                    bool hasspaces = items.Contains("?");
-                    bool legalLocation = IsLegal(location);
-
-                    if (!validQuantity|| hasspaces || !legalLocation)
-                    {
-                        if (firstErrorIndex[sheetindex] == -1)
-                            firstErrorIndex[sheetindex] = i;
-                        TABLEFORMAT.legalTable[sheetindex] = false;
-                        AddToList(tocolor, location);
-                    }
-                }
-            }
-            DtSet[sheetindex].Tables[0].AcceptChanges();
+            //check for errors in the updated table
+            CheckForErrors(datagrid, sheetindex, qtyInRow);
+           
+            //color the errors in red if they exist
             if (tocolor.GetValue() != null)
                 ColorCells(datagrid, tocolor);
             
             return true;
         }
         
+        /// <summary>
+        /// checks for erros in the datagrid:
+        /// valid quantity, if it has spaces or if locations are legal
+        /// </summary>
+        /// <param name="datagrid"></param>
+        /// <param name="sheetindex"></param>
+        /// <param name="qtyInRow"></param>
+        private void CheckForErrors(DataGridView datagrid, int sheetindex, double qtyInRow)
+        {
+            //for each row in the grid
+            for (int i = 0; i < datagrid.RowCount - 1; i++)
+            {
+                //search for spaces in "items"
+                string items = datagrid.Rows[i].Cells[Son_PN_Items].Value.ToString();
+                items = SearchForSpaces(items);
 
+                //update the new "items" value in the dataset
+                DtSet[sheetindex].Tables[0].Rows[i][Son_PN_Items] = items;
+                
+                //value of quantity cell
+                string qtyVal = datagrid.Rows[i].Cells[quantity].Value.ToString();
+                qtyInRow = double.Parse(qtyVal);
+
+                //value of location cell
+                string location = datagrid.Rows[i].Cells[Location].Value.ToString();
+
+                if (qtyVal != "" && items != "")
+                {
+                    //quantity is valid
+                    bool validQuantity = ValidQuantity(qtyInRow, location);
+
+                    //"items" has spaces
+                    bool hasspaces = items.Contains("?");
+
+                    //location is legal
+                    bool legalLocation = IsLegal(location);
+
+                    //if one of them is false
+                    if (!validQuantity || hasspaces || !legalLocation)
+                    {
+                        //we need this to tell the user where the first error at
+                        if (firstErrorIndex[sheetindex] == -1)
+                            firstErrorIndex[sheetindex] = i;
+
+                        //now the table is not legal and we can proceed to comparison
+                        TABLEFORMAT.legalTable[sheetindex] = false;
+
+                        //add this row to the list of rows that should be colourd
+                        AddToList(tocolor, location);
+                    }
+                }
+            }
+            DtSet[sheetindex].Tables[0].AcceptChanges();
+        }
+
+        /// <summary>
+        /// creates a new datarow contains the values given in the array
+        /// </summary>
+        /// <param name="rowobjects"></param>
+        /// <param name="sheetindex"></param>
+        /// <returns></returns>
         private DataRow GenerateRow(string[] rowobjects, int sheetindex)
         {
             DataRow dtr = DtSet[sheetindex].Tables[0].NewRow();
@@ -469,12 +544,7 @@ namespace BOMComparer
         {
             while (rows != null)
             {
-                if (rows.GetValue()[Son_PN_Items].ToString().Contains("@"))
-                {
-                    rows.GetValue()[Son_PN_Items] = rows.GetValue()[Son_PN_Items].ToString().Replace("@", "");
-                    AddToList(tocolor, (rows.GetValue()[Son_PN_Items].ToString()));
-                }
-
+                
                 DtSet[sheetindex].Tables[0].Rows.Add(rows.GetValue());
                 rows = rows.GetNext();
             }

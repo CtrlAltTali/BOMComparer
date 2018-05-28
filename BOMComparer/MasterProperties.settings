@@ -20,5 +20,11 @@
     <Setting Name="qtyNBOM" Type="System.String" Scope="User">
       <Value Profile="(Default)">Quantity</Value>
     </Setting>
+    <Setting Name="descMBOM" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Description</Value>
+    </Setting>
+    <Setting Name="descNBOM" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Value</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

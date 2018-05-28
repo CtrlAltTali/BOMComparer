@@ -94,5 +94,29 @@ namespace BOMComparer {
                 this["qtyNBOM"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Description")]
+        public string descMBOM {
+            get {
+                return ((string)(this["descMBOM"]));
+            }
+            set {
+                this["descMBOM"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Value")]
+        public string descNBOM {
+            get {
+                return ((string)(this["descNBOM"]));
+            }
+            set {
+                this["descNBOM"] = value;
+            }
+        }
     }
 }

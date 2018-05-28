@@ -38,6 +38,11 @@ namespace BOMComparer
           
         }
 
+        /// <summary>
+        /// imports Master BOM excel file to this form
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void importmbBTN_Click(object sender, EventArgs e)
         {
             sheetindex = 0;
@@ -49,6 +54,11 @@ namespace BOMComparer
             buildBTN.Enabled = tb1 && tb2;
         }
 
+        /// <summary>
+        /// imports New BOM excel file to this form
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void importnbBTN_Click(object sender, EventArgs e)
         {
             sheetindex = 1;
@@ -60,32 +70,54 @@ namespace BOMComparer
             buildBTN.Enabled = tb1 && tb2;
         }
 
+
+        /// <summary>
+        /// fixes the two tables
+        /// seperates lines and tells if the program can proceed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buildBTN_Click(object sender, EventArgs e)
         {
+            //make new dir to the new files
             string currentDate = DateTime.Now.ToString("dd-MM-yyyy");
             string currenntTime = DateTime.Now.ToString("hh:mm:ss").Replace(':', '-');
             newDirpath = Path.Combine(Application.StartupPath,  currentDate+ "_"+ currenntTime);
             Directory.CreateDirectory(newDirpath);
+
+            //open the field mapper window
             MasterProps f = new MasterProps();
             f.ShowDialog();
+
+            //if user mapped all fields
             if (TABLEFORMAT.UserChose)
             {
+                //build the new tables
                 this.built1 = datagrid.BuildTable(dataGridView1, 0);
                 built2 = datagrid.BuildTable(dataGridView2, 1);
+
+                //export the new tables into the new dir
                 newFilepaths[0] = datagrid.Export(0, filepaths[0].Substring(filepaths[0].LastIndexOf('\\') + 1), false, newDirpath);
                 newFilepaths[1] = datagrid.Export(1, filepaths[1].Substring(filepaths[1].LastIndexOf('\\') + 1), false, newDirpath);
+
+                //if at least one table is illegal
                 if(!TABLEFORMAT.legalTable[0]|| !TABLEFORMAT.legalTable[0])
                 {
+                    //inform the user about it
                     for (int i = 0; i < datagrid.firstErrorIndex.Length; i++)
                     {
                         int k = datagrid.firstErrorIndex[i] + 1;
                         if (datagrid.firstErrorIndex[i] != -1)
                             MessageBox.Show("First error in table " + tablenames[i] + " in line " + k);
                     }
+                    //disable the comparison
                     compareBTN.Enabled = false;
                 }
+                //if both legal, enable the comparison
                 else
                     compareBTN.Enabled = true;
+
+                //draw row index in row headers in the datagrid
                 this.dataGridView1.RowPostPaint += new DataGridViewRowPostPaintEventHandler(this.dataGridView1_RowPostPaint);
                 this.dataGridView2.RowPostPaint += new DataGridViewRowPostPaintEventHandler(this.dataGridView2_RowPostPaint);
                 dataGridView1.Refresh();
@@ -94,6 +126,12 @@ namespace BOMComparer
 
 
         }
+
+        /// <summary>
+        /// draws row index in row headers in datagridview1
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void dataGridView1_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
         {
             using (SolidBrush b = new SolidBrush(dataGridView1.RowHeadersDefaultCellStyle.ForeColor))
@@ -101,6 +139,12 @@ namespace BOMComparer
                 e.Graphics.DrawString((e.RowIndex + 1).ToString(), e.InheritedRowStyle.Font, b, e.RowBounds.Location.X + 10, e.RowBounds.Location.Y + 4);
             }
         }
+
+        /// <summary>
+        /// draws row index in row headers in datagridview2
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void dataGridView2_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
         {
             using (SolidBrush b = new SolidBrush(dataGridView2.RowHeadersDefaultCellStyle.ForeColor))
@@ -108,18 +152,33 @@ namespace BOMComparer
                 e.Graphics.DrawString((e.RowIndex + 1).ToString(), e.InheritedRowStyle.Font, b, e.RowBounds.Location.X + 10, e.RowBounds.Location.Y + 4);
             }
         }
+
+        /// <summary>
+        /// compares between the two tables when "compare" button is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void compareBTN_Click(object sender, EventArgs e)
         {
+            //create database and tables
             SQLhelper.CreateDBandInsertTables("BOMCompareDB", newFilepaths);
+
+            //execute queries
             SQLhelper.ExecuteScript("BOMCompareDB","sqlite_diff.txt");
             SQLhelper.ExecuteScript("BOMCompareDB", "sqlite_material.txt");
+
+            //get the comparison report tables
             DataTable diff = SQLhelper.FetchTable("BOMCompareDB", "diff");
             DataTable material = SQLhelper.FetchTable("BOMCompareDB", "material");
+
+            //put these tables in a dataset
             DataSet results = new DataSet();
             results.Tables.Add(diff);
             results.Tables[0].TableName = "diff";
             results.Tables.Add(material);
             results.Tables[1].TableName = "material";
+
+            //export the dataset to a new excel file
             string resultpath = SQLhelper.ExportFile(results, "Comparison_Report.xlsx", true, newDirpath);
         }
     }

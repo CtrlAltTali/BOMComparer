@@ -20,6 +20,7 @@ namespace BOMComparer
         static public int Description { get; set; }
         static public int QTY { get; set; }
         static public int Location { get; set; }
+
         static public void ModifyEnum(int tableindex, DataTable dt )
         {
             string[] colnames = new string[4];
