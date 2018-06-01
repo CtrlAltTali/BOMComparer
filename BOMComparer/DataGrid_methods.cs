@@ -15,7 +15,7 @@ namespace BOMComparer
         int Description;
         int QTYcount;
         int Location;
-        public int[] firstErrorIndex = new int[2] { -1, -1 };
+        public string[] firstErrorIndex = new string[2] { "-1", "-1" };
         System.Data.DataSet[] DtSet = new System.Data.DataSet[2];
 
         Node<string> tocolor;
@@ -72,8 +72,9 @@ namespace BOMComparer
                 DtSet[sheetindex] = new System.Data.DataSet();
                 try
                 {
+                    int stat;
                     //put the excel table in the data grid object
-                    MyCommand.Fill(DtSet[sheetindex]);
+                   stat =  MyCommand.Fill(DtSet[sheetindex]);
                     dataGridView.DataSource = DtSet[sheetindex].Tables[0];
                 }
                 catch (Exception e)
@@ -477,8 +478,17 @@ namespace BOMComparer
                     if (!validQuantity || hasspaces || !legalLocation)
                     {
                         //we need this to tell the user where the first error at
-                        if (firstErrorIndex[sheetindex] == -1)
-                            firstErrorIndex[sheetindex] = i;
+                        string err = firstErrorIndex[sheetindex];
+                        if (firstErrorIndex[sheetindex] == "-1")
+                        {
+                            if(hasspaces)
+                                firstErrorIndex[sheetindex] = i.ToString()+"S";
+                            else if(!validQuantity)
+                                firstErrorIndex[sheetindex] = i.ToString() + "Q";
+                            else if(!legalLocation)
+                                firstErrorIndex[sheetindex] = i.ToString() + "L";
+                        }
+                            
 
                         //now the table is not legal and we can proceed to comparison
                         TABLEFORMAT.legalTable[sheetindex] = false;

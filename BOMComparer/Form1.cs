@@ -106,9 +106,27 @@ namespace BOMComparer
                     //inform the user about it
                     for (int i = 0; i < datagrid.firstErrorIndex.Length; i++)
                     {
-                        int k = datagrid.firstErrorIndex[i] + 1;
-                        if (datagrid.firstErrorIndex[i] != -1)
-                            MessageBox.Show("First error in table " + tablenames[i] + " in line " + k);
+                        string k = datagrid.firstErrorIndex[i];
+                        
+                        if (!k.Contains("-1"))
+                        {
+                            int num = int.Parse(k.Remove(k.Length - 1))+1;
+                            string flag = k.Substring(k.Length - 1);
+
+                            switch (flag)
+                            {
+                                case "S":
+                                    MessageBox.Show("First error in table " + tablenames[i] + " in line " + num+".\nERROR: Value contains spaces.");
+                                    break;
+                                case "Q":
+                                    MessageBox.Show("First error in table " + tablenames[i] + " in line " + num + ".\nERROR: Wrong quantities. Check for mistakes or fix TypeGuessRows in Windows registry.");
+                                    break;
+                                case "L":
+                                    MessageBox.Show("First error in table " + tablenames[i] + " in line " + num + ".\nERROR: Locations are illegal.");
+                                    break;
+                            }
+                        }
+                            
                     }
                     //disable the comparison
                     compareBTN.Enabled = false;
