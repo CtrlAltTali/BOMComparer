@@ -74,7 +74,7 @@ namespace BOMComparer
                 {
                     int stat;
                     //put the excel table in the data grid object
-                   stat =  MyCommand.Fill(DtSet[sheetindex]);
+                    stat = MyCommand.Fill(DtSet[sheetindex]);
                     dataGridView.DataSource = DtSet[sheetindex].Tables[0];
                 }
                 catch (Exception e)
@@ -253,7 +253,7 @@ namespace BOMComparer
             {
                 //if contains colons
                 if (locations.Contains(","))
-                {                    
+                {
                     //spit the string
                     string[] locs = locations.Split(',');
                     for (int i = 0; i < locs.Length; i++)
@@ -299,144 +299,152 @@ namespace BOMComparer
         /// </summary>
         public bool BuildTable(DataGridView datagrid, int sheetindex)
         {
-
-            Node<DataRow> toadd = new Node<DataRow>();
-            Node<System.Data.DataRow> toremove = new Node<System.Data.DataRow>();
-            tocolor = new Node<string>();
-            string[] rowobjects = new string[DtSet[sheetindex].Tables[0].Columns.Count];
-            updatetablevars(sheetindex);
-            double qtyInRow = 0;
-            //go over every row in the table
-            for (int i = 0; i < datagrid.RowCount - 1; i++)
+            bool built = false;
+            try
             {
-
-                string items = datagrid.Rows[i].Cells[Son_PN_Items].Value.ToString();
-                string qtyVal = datagrid.Rows[i].Cells[quantity].Value.ToString();
-                string location = datagrid.Rows[i].Cells[Location].Value.ToString(); ;
-                //if items/stx_num is not empty...
-                if (qtyVal != "" && items != "" && location!=null && location!="")
+                Node<DataRow> toadd = new Node<DataRow>();
+                Node<System.Data.DataRow> toremove = new Node<System.Data.DataRow>();
+                tocolor = new Node<string>();
+                string[] rowobjects = new string[DtSet[sheetindex].Tables[0].Columns.Count];
+                updatetablevars(sheetindex);
+                double qtyInRow = 0;
+                //go over every row in the table
+                for (int i = 0; i < datagrid.RowCount ; i++)
                 {
-                    //store the row objects in an array
-                    for (int k = 0; k < rowobjects.Length; k++)
+
+                    string items = datagrid.Rows[i].Cells[Son_PN_Items].Value.ToString();
+                    string qtyVal = datagrid.Rows[i].Cells[quantity].Value.ToString();
+                    string location = datagrid.Rows[i].Cells[Location].Value.ToString(); ;
+                    //if items/stx_num is not empty...
+                    if ((qtyVal != "" || items != "") && location != null && location != "")
                     {
-                        rowobjects[k] = datagrid.Rows[i].Cells[k].Value.ToString();
-                    }
-                    qtyInRow = double.Parse(rowobjects[quantity]);
-
-                    rowobjects[Location] = location;
-
-                    bool validQuantity = ValidQuantity(qtyInRow, rowobjects[Location]);
-                    //string fixesitems = SearchForSpaces(items);
-                    //items = fixesitems;
-                    //rowobjects[Son_PN_Items] = fixesitems;
-                    bool containsComma = rowobjects[Location].Contains(',');
-                    bool containsDash = rowobjects[Location].Contains('-');
-                    bool legalLocation = IsLegal(rowobjects[Location]);
-                    
-
-                    if ((containsDash || containsComma) && legalLocation && validQuantity)
-                    {
-                        string[] newrowobjects = rowobjects;
-                        //spaces in the location string are corrupting the string
-                        rowobjects[Location] = rowobjects[Location].Replace(" ", "");
-
-                        System.Data.DataRow row = DtSet[sheetindex].Tables[0].NewRow();
-                        row[Son_PN_Items] = rowobjects[Son_PN_Items];
-
-                        //if Location contains commas
-                        if (rowobjects[Location].Contains(','))
+                        //store the row objects in an array
+                        for (int k = 0; k < rowobjects.Length; k++)
                         {
+                            rowobjects[k] = datagrid.Rows[i].Cells[k].Value.ToString();
+                        }
+                        qtyInRow = double.Parse(rowobjects[quantity]);
 
-                            // split it
-                            string[] locs = rowobjects[Location].Split(',');
+                        rowobjects[Location] = location;
 
-                            //go over the split-string and find dashes
-                            for (int j = 0; j < locs.Length; j++)
+                        bool validQuantity = ValidQuantity(qtyInRow, rowobjects[Location]);
+                        //string fixesitems = SearchForSpaces(items);
+                        //items = fixesitems;
+                        //rowobjects[Son_PN_Items] = fixesitems;
+                        bool containsComma = rowobjects[Location].Contains(',');
+                        bool containsDash = rowobjects[Location].Contains('-');
+                        bool legalLocation = IsLegal(rowobjects[Location]);
+
+
+                        if ((containsDash || containsComma) && legalLocation && validQuantity)
+                        {
+                            string[] newrowobjects = rowobjects;
+                            //spaces in the location string are corrupting the string
+                            rowobjects[Location] = rowobjects[Location].Replace(" ", "");
+
+                            System.Data.DataRow row = DtSet[sheetindex].Tables[0].NewRow();
+                            row[Son_PN_Items] = rowobjects[Son_PN_Items];
+
+                            //if Location contains commas
+                            if (rowobjects[Location].Contains(','))
                             {
-                                //if dashes exist
-                                if (locs[j].Contains('-'))
-                                {
-                                    //remove them...
-                                    string[] nums = removedash(locs[j]);
 
-                                    //go over the split string
-                                    for (int m = 0; m < nums.Length; m++)
+                                // split it
+                                string[] locs = rowobjects[Location].Split(',');
+
+                                //go over the split-string and find dashes
+                                for (int j = 0; j < locs.Length; j++)
+                                {
+                                    //if dashes exist
+                                    if (locs[j].Contains('-'))
+                                    {
+                                        //remove them...
+                                        string[] nums = removedash(locs[j]);
+
+                                        //go over the split string
+                                        for (int m = 0; m < nums.Length; m++)
+                                        {
+                                            //add this row to the list of new rows that should be added
+                                            newrowobjects[Location] = nums[m];
+                                            newrowobjects[quantity] = "1";
+                                            AddToList(toadd, GenerateRow(newrowobjects, sheetindex));
+                                        }
+                                    }
+                                    //if dashes do not exist
+                                    else
                                     {
                                         //add this row to the list of new rows that should be added
-                                        newrowobjects[Location] = nums[m];
+                                        newrowobjects[Location] = locs[j];
                                         newrowobjects[quantity] = "1";
                                         AddToList(toadd, GenerateRow(newrowobjects, sheetindex));
                                     }
                                 }
-                                //if dashes do not exist
-                                else
+                            }
+                            //if Location does not contain commas
+                            else
+                            {
+                                //remove dashes
+                                string[] nums = removedash(rowobjects[Location]);
+
+                                //go over the split string
+                                for (int m = 0; m < nums.Length; m++)
                                 {
                                     //add this row to the list of new rows that should be added
-                                    newrowobjects[Location] = locs[j];
+                                    newrowobjects[Location] = nums[m];
                                     newrowobjects[quantity] = "1";
                                     AddToList(toadd, GenerateRow(newrowobjects, sheetindex));
                                 }
                             }
-                        }
-                        //if Location does not contain commas
-                        else
-                        {
-                            //remove dashes
-                            string[] nums = removedash(rowobjects[Location]);
 
-                            //go over the split string
-                            for (int m = 0; m < nums.Length; m++)
-                            {
-                                //add this row to the list of new rows that should be added
-                                newrowobjects[Location] = nums[m];
-                                newrowobjects[quantity] = "1";
-                                AddToList(toadd, GenerateRow(newrowobjects, sheetindex));
-                            }
-                        }
+                            //this row is corrupted and not needed anymore
+                            //add this row to the list of rows that should be deleted
+                            AddToList(toremove, ((System.Data.DataRowView)datagrid.Rows[i].DataBoundItem).Row);
 
-                        //this row is corrupted and not needed anymore
-                        //add this row to the list of rows that should be deleted
-                        AddToList(toremove, ((System.Data.DataRowView)datagrid.Rows[i].DataBoundItem).Row);
+                        }
 
                     }
+                    //if items/stx_num is empty...
+                    else
+                    {
+                        //add this row to the list of rows that should be deleted
+                        AddToList(toremove, ((System.Data.DataRowView)datagrid.Rows[i].DataBoundItem).Row);
+                    }
+
 
                 }
-                //if items/stx_num is empty...
-                else
-                {
-                    //add this row to the list of rows that should be deleted
-                    AddToList(toremove, ((System.Data.DataRowView)datagrid.Rows[i].DataBoundItem).Row);
-                }
+
+                //if there are rows that should be added
+                if (toadd.GetValue() != null)
+                    AddRows(toadd, sheetindex);
+
+                //if there are rows that should be removed
+                if (toremove.GetValue() != null)
+                    DeleteRows(toremove, sheetindex);
 
 
+
+                DtSet[sheetindex].Tables[0].AcceptChanges();
+
+                BindingSource source = new BindingSource();
+                source.DataSource = DtSet[sheetindex].Tables[0];
+                datagrid.DataSource = source;
+
+                //check for errors in the updated table
+                CheckForErrors(datagrid, sheetindex, qtyInRow);
+
+                //color the errors in red if they exist
+                if (tocolor.GetValue() != null)
+                    ColorCells(datagrid, tocolor);
+
+                built = true;
             }
-
-            //if there are rows that should be added
-            if (toadd.GetValue() != null)
-                AddRows(toadd, sheetindex);
-
-            //if there are rows that should be removed
-            if (toremove.GetValue() != null)
-                DeleteRows(toremove, sheetindex);
-
-
-
-            DtSet[sheetindex].Tables[0].AcceptChanges();
-
-            BindingSource source = new BindingSource();
-            source.DataSource = DtSet[sheetindex].Tables[0];
-            datagrid.DataSource = source;
-
-            //check for errors in the updated table
-            CheckForErrors(datagrid, sheetindex, qtyInRow);
-           
-            //color the errors in red if they exist
-            if (tocolor.GetValue() != null)
-                ColorCells(datagrid, tocolor);
-            
-            return true;
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+            return built;
         }
-        
+
         /// <summary>
         /// checks for erros in the datagrid:
         /// valid quantity, if it has spaces or if locations are legal
@@ -455,7 +463,7 @@ namespace BOMComparer
 
                 //update the new "items" value in the dataset
                 DtSet[sheetindex].Tables[0].Rows[i][Son_PN_Items] = items;
-                
+
                 //value of quantity cell
                 string qtyVal = datagrid.Rows[i].Cells[quantity].Value.ToString();
                 qtyInRow = double.Parse(qtyVal);
@@ -481,14 +489,14 @@ namespace BOMComparer
                         string err = firstErrorIndex[sheetindex];
                         if (firstErrorIndex[sheetindex] == "-1")
                         {
-                            if(hasspaces)
-                                firstErrorIndex[sheetindex] = i.ToString()+"S";
-                            else if(!validQuantity)
+                            if (hasspaces)
+                                firstErrorIndex[sheetindex] = i.ToString() + "S";
+                            else if (!validQuantity)
                                 firstErrorIndex[sheetindex] = i.ToString() + "Q";
-                            else if(!legalLocation)
+                            else if (!legalLocation)
                                 firstErrorIndex[sheetindex] = i.ToString() + "L";
                         }
-                            
+
 
                         //now the table is not legal and we can proceed to comparison
                         TABLEFORMAT.legalTable[sheetindex] = false;
@@ -554,7 +562,7 @@ namespace BOMComparer
         {
             while (rows != null)
             {
-                
+
                 DtSet[sheetindex].Tables[0].Rows.Add(rows.GetValue());
                 rows = rows.GetNext();
             }
