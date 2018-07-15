@@ -15,11 +15,11 @@ namespace BOMComparer
         int Description;
         int QTYcount;
         int Location;
-        public string[] firstErrorIndex = new string[2] { "-1", "-1" };
+        public string[] firstErrorIndex = new string[2] { "-13", "-13" };
         System.Data.DataSet[] DtSet = new System.Data.DataSet[2];
 
-        Node<string> tocolor;
-
+        Node<DataRow> tocolor;
+        public DataSet errors = new DataSet("Errors");
         /// <summary>
         /// Opens File Manager so the user could choose an excel file
         /// Input: No input
@@ -86,9 +86,9 @@ namespace BOMComparer
             }
         }
 
-        public string Export(int sheetindex, string filename, bool toinform, string destinationpath)
+        public string Export(int sheetindex, string filename, int filecode, string destinationpath)
         {
-            return SQLhelper.ExportFile(DtSet[sheetindex], filename, toinform, destinationpath);
+            return SQLhelper.ExportFile(DtSet[sheetindex], filename, filecode, destinationpath);
         }
 
         /// <summary>
@@ -244,6 +244,7 @@ namespace BOMComparer
         /// <returns>a boolean value indicates if the quantity is valid</returns>
         private bool ValidQuantity(double expectedQuantity, string locations)
         {
+
             int counted = 0;
             //remove spaces from string
             locations = locations.Replace(" ", "");
@@ -289,6 +290,14 @@ namespace BOMComparer
             if (expectedQuantity == counted)
                 return true;
             return false;
+
+        }
+        private void CopyColumns(DataTable origin, DataTable destination)
+        {
+            for (int i = 0; i < origin.Columns.Count; i++)
+            {
+                destination.Columns.Add(origin.Columns[i].ToString());
+            }
         }
         /// <summary>
         /// this method fixes the DataGridView table:
@@ -302,14 +311,17 @@ namespace BOMComparer
             bool built = false;
             try
             {
+                errors.Tables.Add();
+                CopyColumns(DtSet[sheetindex].Tables[0], errors.Tables[sheetindex]);
+                errors.Tables[sheetindex].Columns.Add("Error");
                 Node<DataRow> toadd = new Node<DataRow>();
                 Node<System.Data.DataRow> toremove = new Node<System.Data.DataRow>();
-                tocolor = new Node<string>();
+                tocolor = new Node<DataRow>();
                 string[] rowobjects = new string[DtSet[sheetindex].Tables[0].Columns.Count];
                 updatetablevars(sheetindex);
                 double qtyInRow = 0;
                 //go over every row in the table
-                for (int i = 0; i < datagrid.RowCount ; i++)
+                for (int i = 0; i < datagrid.RowCount; i++)
                 {
 
                     string items = datagrid.Rows[i].Cells[Son_PN_Items].Value.ToString();
@@ -454,6 +466,7 @@ namespace BOMComparer
         /// <param name="qtyInRow"></param>
         private void CheckForErrors(DataGridView datagrid, int sheetindex, double qtyInRow)
         {
+            int m = 0;
             //for each row in the grid
             for (int i = 0; i < datagrid.RowCount - 1; i++)
             {
@@ -471,10 +484,13 @@ namespace BOMComparer
                 //value of location cell
                 string location = datagrid.Rows[i].Cells[Location].Value.ToString();
 
+                string error = "";
                 if (qtyVal != "" && items != "")
                 {
                     //quantity is valid
                     bool validQuantity = ValidQuantity(qtyInRow, location);
+                    if (qtyInRow % 1 != 0)
+                        validQuantity = true;
 
                     //"items" has spaces
                     bool hasspaces = items.Contains("?");
@@ -487,22 +503,53 @@ namespace BOMComparer
                     {
                         //we need this to tell the user where the first error at
                         string err = firstErrorIndex[sheetindex];
-                        if (firstErrorIndex[sheetindex] == "-1")
+                        if (hasspaces)
                         {
-                            if (hasspaces)
+                            if (err == "-1")
                                 firstErrorIndex[sheetindex] = i.ToString() + "S";
-                            else if (!validQuantity)
-                                firstErrorIndex[sheetindex] = i.ToString() + "Q";
-                            else if (!legalLocation)
-                                firstErrorIndex[sheetindex] = i.ToString() + "L";
+                            error = "Row contains spaces";
                         }
+
+                        else if (!validQuantity)
+                        {
+                            if (err == "-1")
+                                firstErrorIndex[sheetindex] = i.ToString() + "Q";
+                            error = "Quantitiy is not valid";
+                        }
+
+                        else if (!legalLocation)
+                        {
+                            if (err == "-1")
+                                firstErrorIndex[sheetindex] = i.ToString() + "L";
+                            error = "Location is illegal";
+                        }
+
 
 
                         //now the table is not legal and we can proceed to comparison
                         TABLEFORMAT.legalTable[sheetindex] = false;
 
                         //add this row to the list of rows that should be colourd
-                        AddToList(tocolor, location);
+                        string[] itemArray = new string[errors.Tables[sheetindex].Columns.Count];
+                        for (int j = 0; j < itemArray.Length - 1; j++)
+                        {
+                            itemArray[j] = datagrid.Rows[i].Cells[j].Value.ToString();
+                        }
+                        itemArray[itemArray.Length - 1] = error;
+
+                        errors.Tables[sheetindex].Rows.Add(itemArray);
+                        if (errors.Tables[sheetindex] != null)
+                            AddToList<DataRow>(tocolor, errors.Tables[sheetindex].Rows[m]);
+                        
+                       
+                        DataRow newRow = DtSet[sheetindex].Tables[0].NewRow();
+                        // We "clone" the row
+                        newRow.ItemArray = DtSet[sheetindex].Tables[0].Rows[i].ItemArray;
+                        // We remove the old and insert the new
+                        DtSet[sheetindex].Tables[0].Rows.Remove(DtSet[sheetindex].Tables[0].Rows[i]);
+                        DtSet[sheetindex].Tables[0].Rows.InsertAt(newRow, 0);
+
+                        m++;
                     }
                 }
             }
@@ -531,7 +578,7 @@ namespace BOMComparer
         /// Output: no output
         /// Author: amazingtali
         /// </summary>
-        private void ColorCells(DataGridView datagrid, Node<string> tocolor)
+        private void ColorCells(DataGridView datagrid, Node<DataRow> tocolor)
         {
             while (tocolor != null)
             {
@@ -540,7 +587,7 @@ namespace BOMComparer
 
                     if (tocolor != null)
                     {
-                        if (row.Cells[Location].Value.ToString() == tocolor.GetValue())
+                        if (row.Cells[Location].Value.ToString() == tocolor.GetValue()[Location].ToString())
                         {
                             row.DefaultCellStyle.ForeColor = System.Drawing.Color.Red;
                             tocolor = tocolor.GetNext();

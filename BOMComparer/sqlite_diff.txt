@@ -1,8 +1,8 @@
 CREATE TABLE diff AS SELECT *
                        FROM (
-                                SELECT mb.[Son P/N Items],
+                                SELECT mb.[Location],
+                                       mb.[Son P/N Items],
                                        mb.[Description],
-                                       mb.[Location],
                                        nb.[Part Reference],
                                        nb.[stx_num],
                                        nb.[Value],
@@ -15,9 +15,9 @@ CREATE TABLE diff AS SELECT *
                                                  mb.[Location] IS NOT NULL AND 
                                                  nb.[Part Reference] IS NOT NULL
                                 UNION ALL
-                                SELECT mb.[Son P/N Items],
+                                SELECT mb.[Location],
+                                       mb.[Son P/N Items],
                                        mb.[Description],
-                                       mb.[Location],
                                        nb.[Part Reference],
                                        nb.[stx_num],
                                        nb.[Value],
@@ -28,9 +28,9 @@ CREATE TABLE diff AS SELECT *
                                  WHERE nb.[Part Reference] IS NULL AND 
                                        mb.[Location] IS NOT NULL
                                 UNION ALL
-                                SELECT mb.[Son P/N Items],
+                                SELECT mb.[Location],
+                                       mb.[Son P/N Items],
                                        mb.[Description],
-                                       mb.[Location],
                                        nb.[Part Reference],
                                        nb.[stx_num],
                                        nb.[Value],

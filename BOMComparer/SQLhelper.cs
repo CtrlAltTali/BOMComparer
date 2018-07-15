@@ -17,10 +17,43 @@ namespace BOMComparer
     {
         public static bool created = false;
         public static bool compared = false;
+        private static string[][] formats = new string[2][];
+        static private void InitFormats()
+        {
+            formats[0] = new string[7];
+            formats[1] = new string[7];
 
+            //formats[0][0] = TABLEFORMAT.userChosenCoulomnName["ReferenceMBOM"];
+            //formats[0][1] = TABLEFORMAT.userChosenCoulomnName["partNumMBOM"];
+            //formats[0][2] = TABLEFORMAT.userChosenCoulomnName["descMBOM"];
+            //formats[0][3] = TABLEFORMAT.userChosenCoulomnName["ReferenceNBOM"];
+            //formats[0][4] = TABLEFORMAT.userChosenCoulomnName["partNumNBOM"];
+            //formats[0][5] = TABLEFORMAT.userChosenCoulomnName["descNBOM"];
+            //formats[0][6] = "status";
+
+            formats[1][0] = "qty_master";
+            formats[1][1] = "Son P/N Items";
+            formats[1][2] = "Description";
+            formats[1][3] = "qty_new";
+            formats[1][4] = "stx_num";
+            formats[1][5] = "Description:1";
+            formats[1][6] = "delta";
+
+           
+        }
+        static private void SetOrdinalByFormat(DataSet dt,int index)
+        {
+            for (int j = 0; j < formats[index].Length; j++)
+            {
+                dt.Tables[index].Columns[formats[index][j]].SetOrdinal(j);
+            }
+        }
         /// <summary>
-        /// Exports a dataset into an excel file. parameter "toinform" is used to 
-        /// know if there's a need to inform the user that a file was created
+        /// Exports a dataset into an excel file. parameter "filecode" is used to 
+        /// know what kind of file is exported
+        /// 0 for built original file
+        /// 1 for comparison results
+        /// 2 for error file
         /// </summary>
         /// <param name="dtset"></param>
         /// <param name="filename"></param>
@@ -29,8 +62,14 @@ namespace BOMComparer
         /// <returns>
         /// the path of the new file
         /// </returns>
-        public static string ExportFile(System.Data.DataSet dtset, string filename, bool toinform, string destinationpath)
+        public static string ExportFile(DataSet dtset, string filename, int filecode, string destinationpath)
         {
+            if (filecode==1)
+            {
+                InitFormats();
+                SetOrdinalByFormat(dtset,1);
+            }
+            
             //creates a new name for the file
             string prefix = filename.Substring(0, filename.LastIndexOf('.'));
             string suffix = filename.Substring(filename.LastIndexOf('.'));
@@ -40,7 +79,7 @@ namespace BOMComparer
             CreateExcelFile.CreateExcelDocument(dtset, newpath);
 
             //if the user needs to know...
-            if (toinform)
+            if (filecode!=0)
                 MessageBox.Show("You can find the new file in: " + newpath);
             return newpath;
         }

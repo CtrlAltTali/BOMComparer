@@ -97,8 +97,8 @@ namespace BOMComparer
                 built2 = datagrid.BuildTable(dataGridView2, 1);
 
                 //export the new tables into the new dir
-                newFilepaths[0] = datagrid.Export(0, filepaths[0].Substring(filepaths[0].LastIndexOf('\\') + 1), false, newDirpath);
-                newFilepaths[1] = datagrid.Export(1, filepaths[1].Substring(filepaths[1].LastIndexOf('\\') + 1), false, newDirpath);
+                newFilepaths[0] = datagrid.Export(0, filepaths[0].Substring(filepaths[0].LastIndexOf('\\') + 1), 0, newDirpath);
+                newFilepaths[1] = datagrid.Export(1, filepaths[1].Substring(filepaths[1].LastIndexOf('\\') + 1), 0, newDirpath);
 
                 //if at least one table is illegal
                 if(!TABLEFORMAT.legalTable[0]|| !TABLEFORMAT.legalTable[0])
@@ -130,6 +130,8 @@ namespace BOMComparer
                     }
                     //disable the comparison
                     compareBTN.Enabled = false;
+                    //export the error table to a new excel file
+                    string resultpath = SQLhelper.ExportFile(datagrid.errors, "Errors.xlsx", 2, newDirpath);
                 }
                 //if both legal, enable the comparison
                 else
@@ -192,12 +194,14 @@ namespace BOMComparer
             //put these tables in a dataset
             DataSet results = new DataSet();
             results.Tables.Add(diff);
-            results.Tables[0].TableName = "diff";
+            results.Tables[0].TableName = "Change in References";
             results.Tables.Add(material);
-            results.Tables[1].TableName = "material";
+            results.Tables[1].TableName = "Material Change";
 
             //export the dataset to a new excel file
-            string resultpath = SQLhelper.ExportFile(results, "Comparison_Report.xlsx", true, newDirpath);
+            string resultpath = SQLhelper.ExportFile(results, "Comparison_Report.xlsx", 1, newDirpath);
         }
+
+
     }
 }
