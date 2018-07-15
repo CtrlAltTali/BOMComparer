@@ -45,22 +45,30 @@ namespace BOMComparer
         }
         static private void SetOrdinalByFormat(DataSet dt, int index)
         {
-            if (index == 1)
+            try
             {
-                DataColumnCollection cols = dt.Tables[index].Columns;
-                cols[0].ColumnName = TABLEFORMAT.userChosenCoulomnName["qtyMBOM"];
-                cols[1].ColumnName = TABLEFORMAT.userChosenCoulomnName["partNumMBOM"];
-                cols[2].ColumnName = TABLEFORMAT.userChosenCoulomnName["qtyNBOM"];
-                cols[3].ColumnName = TABLEFORMAT.userChosenCoulomnName["partNumNBOM"];
-                cols[4].ColumnName = "delta";
-                cols[5].ColumnName = TABLEFORMAT.userChosenCoulomnName["descMBOM"];
-                cols[6].ColumnName = TABLEFORMAT.userChosenCoulomnName["descNBOM"];
+                if (index == 1)
+                {
+                    DataColumnCollection cols = dt.Tables[index].Columns;
+                    cols[0].ColumnName = TABLEFORMAT.userChosenCoulomnName["qtyMBOM"];
+                    cols[1].ColumnName = TABLEFORMAT.userChosenCoulomnName["partNumMBOM"];
+                    cols[2].ColumnName = TABLEFORMAT.userChosenCoulomnName["qtyNBOM"];
+                    cols[3].ColumnName = TABLEFORMAT.userChosenCoulomnName["partNumNBOM"];
+                    cols[4].ColumnName = "delta";
+                    cols[5].ColumnName = TABLEFORMAT.userChosenCoulomnName["descMBOM"];
+                    cols[6].ColumnName = TABLEFORMAT.userChosenCoulomnName["descNBOM"];
+                }
+
+                for (int j = 0; j < formats[index].Length; j++)
+                {
+                    dt.Tables[index].Columns[formats[index][j]].SetOrdinal(j);
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
             }
 
-            for (int j = 0; j < formats[index].Length; j++)
-            {
-                dt.Tables[index].Columns[formats[index][j]].SetOrdinal(j);
-            }
         }
         /// <summary>
         /// Exports a dataset into an excel file. parameter "filecode" is used to 
