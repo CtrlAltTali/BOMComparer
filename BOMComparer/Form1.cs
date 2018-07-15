@@ -79,6 +79,7 @@ namespace BOMComparer
         /// <param name="e"></param>
         private void buildBTN_Click(object sender, EventArgs e)
         {
+
             //make new dir to the new files
             string currentDate = DateTime.Now.ToString("dd-MM-yyyy");
             string currenntTime = DateTime.Now.ToString("hh:mm:ss").Replace(':', '-');
@@ -95,11 +96,7 @@ namespace BOMComparer
                 //build the new tables
                 this.built1 = datagrid.BuildTable(dataGridView1, 0);
                 built2 = datagrid.BuildTable(dataGridView2, 1);
-
-                //export the new tables into the new dir
-                newFilepaths[0] = datagrid.Export(0, filepaths[0].Substring(filepaths[0].LastIndexOf('\\') + 1), 0, newDirpath);
-                newFilepaths[1] = datagrid.Export(1, filepaths[1].Substring(filepaths[1].LastIndexOf('\\') + 1), 0, newDirpath);
-
+                string improvedpath = newDirpath;
                 //if at least one table is illegal
                 if (datagrid.errors.Tables[0].Rows.Count != 0 || datagrid.errors.Tables[1].Rows.Count != 0)
                 {
@@ -107,14 +104,29 @@ namespace BOMComparer
                     //disable the comparison
                     compareBTN.Enabled = false;
                     //export the error table to a new excel file
+                    
                     string resultpath = SQLhelper.ExportFile(datagrid.errors, "Errors.xlsx", 2, newDirpath);
-
+                    improvedpath = newDirpath + "-Error";
+                    System.IO.Directory.Move(newDirpath, improvedpath);
 
                 }
                 //if both legal, enable the comparison
                 else
+                {
+                    improvedpath = newDirpath + "-Comparison";
+                    System.IO.Directory.Move(newDirpath, improvedpath);
                     compareBTN.Enabled = true;
+                }
+                newDirpath = improvedpath;
+                //export the new tables into the new dir
+                newFilepaths[0] = datagrid.Export(0, filepaths[0].Substring(filepaths[0].LastIndexOf('\\') + 1), 0, newDirpath);
+                newFilepaths[1] = datagrid.Export(1, filepaths[1].Substring(filepaths[1].LastIndexOf('\\') + 1), 0, newDirpath);
 
+                
+                   
+
+
+                
                 //draw row index in row headers in the datagrid
                 this.dataGridView1.RowPostPaint += new DataGridViewRowPostPaintEventHandler(this.dataGridView1_RowPostPaint);
                 this.dataGridView2.RowPostPaint += new DataGridViewRowPostPaintEventHandler(this.dataGridView2_RowPostPaint);

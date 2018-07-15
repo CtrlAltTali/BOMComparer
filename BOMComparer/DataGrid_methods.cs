@@ -340,9 +340,11 @@ namespace BOMComparer
                     string qtyVal = datagrid.Rows[i].Cells[quantity].Value.ToString();
                     string location = datagrid.Rows[i].Cells[Location].Value.ToString(); ;
                     //if items/stx_num is not empty...
+                    
                     if ((qtyVal != "" || items != "") && location != null && location != "")
                     {
-                        //store the row objects in an array
+  
+                            //store the row objects in an array
                         for (int k = 0; k < rowobjects.Length; k++)
                         {
                             rowobjects[k] = datagrid.Rows[i].Cells[k].Value.ToString();
