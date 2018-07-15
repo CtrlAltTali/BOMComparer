@@ -36,6 +36,7 @@
             this.dataGridView2 = new System.Windows.Forms.DataGridView();
             this.mbLBL = new System.Windows.Forms.Label();
             this.nbLBL = new System.Windows.Forms.Label();
+            this.saveBTN = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
             this.SuspendLayout();
@@ -47,7 +48,6 @@
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Location = new System.Drawing.Point(12, 42);
             this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.ReadOnly = true;
             this.dataGridView1.Size = new System.Drawing.Size(626, 640);
             this.dataGridView1.TabIndex = 0;
             // 
@@ -66,7 +66,7 @@
             // 
             // compareBTN
             // 
-            this.compareBTN.BackColor = System.Drawing.Color.MintCream;
+            this.compareBTN.BackColor = System.Drawing.Color.LightYellow;
             this.compareBTN.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.compareBTN.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.compareBTN.Location = new System.Drawing.Point(1231, 344);
@@ -110,7 +110,6 @@
             this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView2.Location = new System.Drawing.Point(644, 42);
             this.dataGridView2.Name = "dataGridView2";
-            this.dataGridView2.ReadOnly = true;
             this.dataGridView2.Size = new System.Drawing.Size(581, 640);
             this.dataGridView2.TabIndex = 11;
             // 
@@ -134,12 +133,26 @@
             this.nbLBL.TabIndex = 13;
             this.nbLBL.Text = "New BOM:";
             // 
+            // saveBTN
+            // 
+            this.saveBTN.BackColor = System.Drawing.Color.LavenderBlush;
+            this.saveBTN.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.saveBTN.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.saveBTN.Location = new System.Drawing.Point(1231, 464);
+            this.saveBTN.Name = "saveBTN";
+            this.saveBTN.Size = new System.Drawing.Size(169, 72);
+            this.saveBTN.TabIndex = 15;
+            this.saveBTN.Text = "Save Changes";
+            this.saveBTN.UseVisualStyleBackColor = false;
+            this.saveBTN.Click += new System.EventHandler(this.saveBTN_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.LightSteelBlue;
             this.ClientSize = new System.Drawing.Size(1419, 687);
+            this.Controls.Add(this.saveBTN);
             this.Controls.Add(this.nbLBL);
             this.Controls.Add(this.mbLBL);
             this.Controls.Add(this.dataGridView2);
@@ -167,6 +180,7 @@
         private System.Windows.Forms.DataGridView dataGridView2;
         private System.Windows.Forms.Label mbLBL;
         private System.Windows.Forms.Label nbLBL;
+        private System.Windows.Forms.Button saveBTN;
     }
 }
 

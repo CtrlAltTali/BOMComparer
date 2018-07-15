@@ -16,7 +16,7 @@ namespace BOMComparer
         int QTYcount;
         int Location;
         public string[] firstErrorIndex = new string[2] { "-13", "-13" };
-        System.Data.DataSet[] DtSet = new System.Data.DataSet[2];
+        public System.Data.DataSet[] DtSet = new System.Data.DataSet[2];
 
         Node<DataRow> tocolor;
         public DataSet errors = new DataSet("Errors");
@@ -296,7 +296,7 @@ namespace BOMComparer
         {
             for (int i = 0; i < origin.Columns.Count; i++)
             {
-                destination.Columns.Add(origin.Columns[i].ToString());
+                destination.Columns.Add(origin.Columns[i].ColumnName);
             }
         }
         /// <summary>
@@ -311,9 +311,21 @@ namespace BOMComparer
             bool built = false;
             try
             {
-                errors.Tables.Add();
-                CopyColumns(DtSet[sheetindex].Tables[0], errors.Tables[sheetindex]);
-                errors.Tables[sheetindex].Columns.Add("Error");
+                if (errors.Tables.Count < 2)
+                {
+                    errors.Tables.Add();
+                    CopyColumns(DtSet[sheetindex].Tables[0], errors.Tables[sheetindex]);
+                    errors.Tables[sheetindex].Columns.Add("Error");
+                }
+                else
+                {
+                    for (int i = 0; i < errors.Tables.Count; i++)
+                    {
+                        errors.Tables[i].Clear();
+                    }
+                }
+
+               
                 Node<DataRow> toadd = new Node<DataRow>();
                 Node<System.Data.DataRow> toremove = new Node<System.Data.DataRow>();
                 tocolor = new Node<DataRow>();
@@ -323,7 +335,7 @@ namespace BOMComparer
                 //go over every row in the table
                 for (int i = 0; i < datagrid.RowCount; i++)
                 {
-
+                    datagrid.Rows[i].DefaultCellStyle.ForeColor = System.Drawing.Color.Black;
                     string items = datagrid.Rows[i].Cells[Son_PN_Items].Value.ToString();
                     string qtyVal = datagrid.Rows[i].Cells[quantity].Value.ToString();
                     string location = datagrid.Rows[i].Cells[Location].Value.ToString(); ;
@@ -449,6 +461,9 @@ namespace BOMComparer
                     ColorCells(datagrid, tocolor);
 
                 built = true;
+
+               
+
             }
             catch (Exception e)
             {
@@ -554,6 +569,7 @@ namespace BOMComparer
                 }
             }
             DtSet[sheetindex].Tables[0].AcceptChanges();
+            
         }
 
         /// <summary>

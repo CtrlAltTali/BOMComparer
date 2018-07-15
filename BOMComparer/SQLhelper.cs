@@ -10,6 +10,8 @@ using System.Data.OleDb;
 using System.Data;
 using System.IO;
 using System.Reflection;
+using Microsoft.Office.Interop.Excel;
+using System.Drawing;
 
 namespace BOMComparer
 {
@@ -31,18 +33,30 @@ namespace BOMComparer
             //formats[0][5] = TABLEFORMAT.userChosenCoulomnName["descNBOM"];
             //formats[0][6] = "status";
 
-            formats[1][0] = "qty_master";
-            formats[1][1] = "Son P/N Items";
-            formats[1][2] = "Description";
-            formats[1][3] = "qty_new";
-            formats[1][4] = "stx_num";
-            formats[1][5] = "Description:1";
+            formats[1][0] = TABLEFORMAT.userChosenCoulomnName["qtyMBOM"];
+            formats[1][1] = TABLEFORMAT.userChosenCoulomnName["partNumMBOM"];
+            formats[1][2] = TABLEFORMAT.userChosenCoulomnName["descMBOM"];
+            formats[1][3] = TABLEFORMAT.userChosenCoulomnName["qtyNBOM"];
+            formats[1][4] = TABLEFORMAT.userChosenCoulomnName["partNumNBOM"];
+            formats[1][5] = TABLEFORMAT.userChosenCoulomnName["descMBOM"];
             formats[1][6] = "delta";
 
-           
+
         }
-        static private void SetOrdinalByFormat(DataSet dt,int index)
+        static private void SetOrdinalByFormat(DataSet dt, int index)
         {
+            if (index == 1)
+            {
+                DataColumnCollection cols = dt.Tables[index].Columns;
+                cols[0].ColumnName = TABLEFORMAT.userChosenCoulomnName["qtyMBOM"];
+                cols[1].ColumnName = TABLEFORMAT.userChosenCoulomnName["partNumMBOM"];
+                cols[2].ColumnName = TABLEFORMAT.userChosenCoulomnName["qtyNBOM"];
+                cols[3].ColumnName = TABLEFORMAT.userChosenCoulomnName["partNumNBOM"];
+                cols[4].ColumnName = "delta";
+                cols[5].ColumnName = TABLEFORMAT.userChosenCoulomnName["descMBOM"];
+                cols[6].ColumnName = TABLEFORMAT.userChosenCoulomnName["descNBOM"];
+            }
+
             for (int j = 0; j < formats[index].Length; j++)
             {
                 dt.Tables[index].Columns[formats[index][j]].SetOrdinal(j);
@@ -64,12 +78,12 @@ namespace BOMComparer
         /// </returns>
         public static string ExportFile(DataSet dtset, string filename, int filecode, string destinationpath)
         {
-            if (filecode==1)
+            if (filecode == 1)
             {
                 InitFormats();
-                SetOrdinalByFormat(dtset,1);
+                SetOrdinalByFormat(dtset, 1);
             }
-            
+
             //creates a new name for the file
             string prefix = filename.Substring(0, filename.LastIndexOf('.'));
             string suffix = filename.Substring(filename.LastIndexOf('.'));
@@ -79,12 +93,44 @@ namespace BOMComparer
             CreateExcelFile.CreateExcelDocument(dtset, newpath);
 
             //if the user needs to know...
-            if (filecode!=0)
+            if (filecode != 0)
+            {
+                if (filecode == 1)
+                    ColorFile(newpath);
                 MessageBox.Show("You can find the new file in: " + newpath);
+            }
+
             return newpath;
         }
 
+        private static void ColorFile(string path)
+        {
+            Microsoft.Office.Interop.Excel.Application excel = new Microsoft.Office.Interop.Excel.Application();
+            Workbook wb = excel.Workbooks.Open(path);
+            string sheet1 = "Change in References";
+            string sheet2 = "Material Change";
 
+            wb.Sheets[sheet1].Columns.AutoFit();
+            wb.Sheets[sheet1].Cells(1, 1).interior.color = Color.LightBlue;
+            wb.Sheets[sheet1].Cells(1, 2).interior.color = Color.LightBlue;
+            wb.Sheets[sheet1].Cells(1, 3).interior.color = Color.LightBlue;
+            wb.Sheets[sheet1].Cells(1, 4).interior.color = Color.LightGreen;
+            wb.Sheets[sheet1].Cells(1, 5).interior.color = Color.LightGreen;
+            wb.Sheets[sheet1].Cells(1, 6).interior.color = Color.LightGreen;
+            wb.Sheets[sheet1].Cells(1, 7).interior.color = Color.Orange;
+
+            wb.Sheets[sheet2].Columns.AutoFit();
+            wb.Sheets[sheet2].Cells(1, 1).interior.color = Color.LightBlue;
+            wb.Sheets[sheet2].Cells(1, 2).interior.color = Color.LightBlue;
+            wb.Sheets[sheet2].Cells(1, 3).interior.color = Color.LightBlue;
+            wb.Sheets[sheet2].Cells(1, 4).interior.color = Color.LightGreen;
+            wb.Sheets[sheet2].Cells(1, 5).interior.color = Color.LightGreen;
+            wb.Sheets[sheet2].Cells(1, 6).interior.color = Color.LightGreen;
+            wb.Sheets[sheet2].Cells(1, 7).interior.color = Color.Orange;
+
+            wb.Save();
+
+        }
         /// <summary>
         /// fills datasets with the content of excel files
         /// </summary>
@@ -102,7 +148,7 @@ namespace BOMComparer
                 string connectString =
                 "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + filepaths[i] + ";Extended Properties=\"Excel 12.0 Xml;HDR=YES;IMEX=1;\"";
                 OleDbConnection conn = new OleDbConnection(connectString);
-                
+
                 //get the sheet name (excel table name)
                 string sheetname = DataGrid_methods.GetSheetName(connectString, 0);
 
@@ -128,7 +174,7 @@ namespace BOMComparer
             //create the sqlite command
             SQLiteCommand sqlite_cmd = sqlite_conn.CreateCommand();
 
-            DataTable dt = ds.Tables[0];
+            System.Data.DataTable dt = ds.Tables[0];
 
             //create the beginning of the commnand string
             string commandstr = "CREATE TABLE " + tablename + " (";
@@ -167,7 +213,7 @@ namespace BOMComparer
             //create the sqlite command
             SQLiteCommand sqlite_cmd = sqlite_conn.CreateCommand();
 
-            DataTable dt = ds.Tables[0];
+            System.Data.DataTable dt = ds.Tables[0];
 
             //create the beginning of the commnand string
             string basestrcommand = "INSERT INTO " + tablename + " (";
@@ -187,7 +233,7 @@ namespace BOMComparer
                 if (i < dt.Columns.Count - 1)
                     basestrcommand += ", ";
             }
-            
+
             basestrcommand += ") VALUES (";
             string strcommand = basestrcommand;
 
@@ -310,10 +356,10 @@ namespace BOMComparer
         /// <param name="dbname"></param>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static DataTable FetchTable(string dbname,string name)
+        public static System.Data.DataTable FetchTable(string dbname, string name)
         {
             //new data table
-            DataTable dataTable = new DataTable();
+            System.Data.DataTable dataTable = new System.Data.DataTable();
 
             //connect to database
             using (SQLiteConnection conn = new SQLiteConnection("Data Source=" + dbname + ".sqlite;Version=3;"))
@@ -326,7 +372,7 @@ namespace BOMComparer
 
                     SQLiteHelper sh = new SQLiteHelper(cmd);
                     //execute the select query
-                    dataTable = sh.Select("select * from "+name+";");
+                    dataTable = sh.Select("select * from " + name + ";");
 
                     conn.Close();
                 }
