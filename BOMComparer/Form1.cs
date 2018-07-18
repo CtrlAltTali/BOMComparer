@@ -27,12 +27,16 @@ namespace BOMComparer
         bool tb2 = false;
         bool compared = false;
         string newDirpath = "";
+        string basedir = "";
         string[] tablenames = new string[2] { "Master BOM", "New BOM" };
         public Form1()
         {
             InitializeComponent();
             compareBTN.Enabled = false;
             buildBTN.Enabled = false;
+            basedir = Application.StartupPath + "\\Reports";
+            if (!Directory.Exists(basedir))
+                Directory.CreateDirectory(basedir);
             //string[] diffQuery = System.IO.File.ReadAllLines("sqlite_diff.txt");
             //dataGridView1.Hide();
 
@@ -85,7 +89,7 @@ namespace BOMComparer
             //make new dir to the new files
             string currentDate = DateTime.Now.ToString("dd-MM-yyyy");
             string currenntTime = DateTime.Now.ToString("hh:mm:ss").Replace(':', '-');
-            newDirpath = Path.Combine(Application.StartupPath, currentDate + "_" + currenntTime);
+            newDirpath = Path.Combine(basedir, currentDate + "_" + currenntTime);
             Directory.CreateDirectory(newDirpath);
 
             //open the field mapper window
