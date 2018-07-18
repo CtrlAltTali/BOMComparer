@@ -1,45 +1,45 @@
 CREATE TABLE diff AS SELECT *
                        FROM (
-                                SELECT mb.[Location],
-                                       mb.[Son P/N Items],
-                                       mb.[Description],
-                                       nb.[Part Reference],
-                                       nb.[stx_num],
-                                       nb.[Value],
-                                      CASE WHEN mb.[Son P/N Items] <> nb.stx_num THEN "changed" WHEN mb.[Son P/N Items] = nb.[stx_num] AND 
-                                                                                                      mb.[Location] IS NOT NULL AND 
-                                                                                                      nb.[Part Reference] IS NOT NULL THEN "same" END status
+                                SELECT mb.ReferenceMBOM,
+                                       mb.partNumMBOM,
+                                       mb.descMBOM,
+                                       nb.ReferenceNBOM,
+                                       nb.partNumNBOM,
+                                       nb.descNBOM,
+                                      CASE WHEN mb.partNumMBOM <> nb.partNumNBOM THEN "changed" WHEN mb.partNumMBOM = nb.partNumNBOM AND 
+                                                                                                      mb.ReferenceMBOM IS NOT NULL AND 
+                                                                                                      nb.ReferenceNBOM IS NOT NULL THEN "same" END status
                                   FROM Master_BOM mb
                                        INNER JOIN
-                                       New_BOM nb ON mb.[Location] = nb.[Part Reference] AND 
-                                                 mb.[Location] IS NOT NULL AND 
-                                                 nb.[Part Reference] IS NOT NULL
+                                       New_BOM nb ON mb.ReferenceMBOM = nb.ReferenceNBOM AND 
+                                                 mb.ReferenceMBOM IS NOT NULL AND 
+                                                 nb.ReferenceNBOM IS NOT NULL
                                 UNION ALL
-                                SELECT mb.[Location],
-                                       mb.[Son P/N Items],
-                                       mb.[Description],
-                                       nb.[Part Reference],
-                                       nb.[stx_num],
-                                       nb.[Value],
+                                SELECT mb.ReferenceMBOM,
+                                       mb.partNumMBOM,
+                                       mb.descMBOM,
+                                       nb.ReferenceNBOM,
+                                       nb.partNumNBOM,
+                                       nb.descNBOM,
                                           'removed' AS status
                                   FROM Master_BOM mb
                                        LEFT OUTER JOIN
-                                       New_BOM nb ON mb.[Location] = nb.[Part Reference]
-                                 WHERE nb.[Part Reference] IS NULL AND 
-                                       mb.[Location] IS NOT NULL
+                                       New_BOM nb ON mb.ReferenceMBOM = nb.ReferenceNBOM
+                                 WHERE nb.ReferenceNBOM IS NULL AND 
+                                       mb.ReferenceMBOM IS NOT NULL
                                 UNION ALL
-                                SELECT mb.[Location],
-                                       mb.[Son P/N Items],
-                                       mb.[Description],
-                                       nb.[Part Reference],
-                                       nb.[stx_num],
-                                       nb.[Value],
+                                SELECT mb.ReferenceMBOM,
+                                       mb.partNumMBOM,
+                                       mb.descMBOM,
+                                       nb.ReferenceNBOM,
+                                       nb.partNumNBOM,
+                                       nb.descNBOM,
                                           'added' AS status
                                   FROM New_BOM nb
                                        LEFT OUTER JOIN
-                                       Master_BOM mb ON mb.[Location] = nb.[Part Reference]
-                                 WHERE mb.[Location] IS NULL AND 
-                                       nb.[Part Reference] IS NOT NULL
+                                       Master_BOM mb ON mb.ReferenceMBOM = nb.ReferenceNBOM
+                                 WHERE mb.ReferenceMBOM IS NULL AND 
+                                       nb.ReferenceNBOM IS NOT NULL
                             )
 
                             

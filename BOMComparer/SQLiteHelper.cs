@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Data;
 using System.Globalization;
+using System.Windows.Forms;
 
 namespace System.Data.SQLite
 {
@@ -95,17 +96,24 @@ namespace System.Data.SQLite
 
         public DataTable Select(string sql, IEnumerable<SQLiteParameter> parameters = null)
         {
-            cmd.CommandText = sql;
-            if (parameters != null)
-            {
-                foreach (var param in parameters)
-                {
-                    cmd.Parameters.Add(param);
-                }
-            }
-            SQLiteDataAdapter da = new SQLiteDataAdapter(cmd);
             DataTable dt = new DataTable();
-            da.Fill(dt);
+            try
+            {
+                cmd.CommandText = sql;
+                if (parameters != null)
+                {
+                    foreach (var param in parameters)
+                    {
+                        cmd.Parameters.Add(param);
+                    }
+                }
+                SQLiteDataAdapter da = new SQLiteDataAdapter(cmd);               
+                da.Fill(dt);
+            }
+            catch(Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
             return dt;
         }
 

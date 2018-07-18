@@ -1,8 +1,8 @@
 CREATE TABLE material AS SELECT z.*,
-                                dnb.[Value]
+                                dnb.descNBOM
                            FROM (
                                     SELECT s.*,
-                                           dmb.[Description]
+                                           dmb.descMBOM
                                       FROM (
                                                SELECT t.*,
                                                       ifnull(t.qty_master, 0) - ifnull(t.qty_new, 0) AS delta
@@ -10,76 +10,76 @@ CREATE TABLE material AS SELECT z.*,
                                                           SELECT mb.*,
                                                                  nb.*
                                                             FROM (
-                                                                     SELECT sum(mb.[QTY]) AS qty_master,
-                                                                            mb.[Son P/N Items]
+                                                                     SELECT sum(mb.qtyMBOM) AS qty_master,
+                                                                            mb.partNumMBOM
                                                                        FROM Master_BOM mb
-                                                                      GROUP BY mb.[Son P/N Items]
+                                                                      GROUP BY mb.partNumMBOM
                                                                  )
                                                                  mb
                                                                  INNER JOIN
                                                                  (
-                                                                     SELECT sum(nb.[Quantity]) AS qty_new,
-                                                                            nb.[stx_num]
+                                                                     SELECT sum(nb.qtyNBOM) AS qty_new,
+                                                                            nb.partNumNBOM
                                                                        FROM New_BOM nb
-                                                                      GROUP BY nb.[stx_num]
+                                                                      GROUP BY nb.partNumNBOM
                                                                  )
-                                                                 nb ON mb.[Son P/N Items] = nb.[stx_num]
+                                                                 nb ON mb.partNumMBOM = nb.partNumNBOM
                                                           UNION ALL
                                                           SELECT mb.*,
                                                                  nb.*
                                                             FROM (
-                                                                     SELECT sum(mb.[QTY]) AS qty_master,
-                                                                            mb.[Son P/N Items]
+                                                                     SELECT sum(mb.qtyMBOM) AS qty_master,
+                                                                            mb.partNumMBOM
                                                                        FROM Master_BOM mb
-                                                                      GROUP BY mb.[Son P/N Items]
+                                                                      GROUP BY mb.partNumMBOM
                                                                  )
                                                                  mb
                                                                  LEFT OUTER JOIN
                                                                  (
-                                                                     SELECT sum(nb.[Quantity]) AS qty_new,
-                                                                            nb.[stx_num]
+                                                                     SELECT sum(nb.qtyNBOM) AS qty_new,
+                                                                            nb.partNumNBOM
                                                                        FROM New_BOM nb
-                                                                      GROUP BY nb.[stx_num]
+                                                                      GROUP BY nb.partNumNBOM
                                                                  )
-                                                                 nb ON mb.[Son P/N Items] = nb.[stx_num]
-                                                           WHERE nb.[stx_num] IS NULL
+                                                                 nb ON mb.partNumMBOM = nb.partNumNBOM
+                                                           WHERE nb.partNumNBOM IS NULL
                                                           UNION ALL
                                                           SELECT mb.*,
                                                                  nb.*
                                                             FROM (
-                                                                     SELECT sum(nb.[Quantity]) AS qty_new,
-                                                                            nb.[stx_num]
+                                                                     SELECT sum(nb.qtyNBOM) AS qty_new,
+                                                                            nb.partNumNBOM
                                                                        FROM New_BOM nb
-                                                                      GROUP BY nb.[stx_num]
+                                                                      GROUP BY nb.partNumNBOM
                                                                  )
                                                                  nb
                                                                  LEFT OUTER JOIN
                                                                  (
-                                                                     SELECT sum(mb.[QTY]) AS qty_master,
-                                                                            mb.[Son P/N Items]
+                                                                     SELECT sum(mb.qtyMBOM) AS qty_master,
+                                                                            mb.partNumMBOM
                                                                        FROM Master_BOM mb
-                                                                      GROUP BY mb.[Son P/N Items]
+                                                                      GROUP BY mb.partNumMBOM
                                                                  )
-                                                                 mb ON mb.[Son P/N Items] = nb.[stx_num]
-                                                           WHERE mb.[Son P/N Items] IS NULL
+                                                                 mb ON mb.partNumMBOM = nb.partNumNBOM
+                                                           WHERE mb.partNumMBOM IS NULL
                                                       )
                                                       t
                                            )
                                            s
                                            LEFT OUTER JOIN
                                            (
-                                               SELECT DISTINCT mb.[Son P/N Items],
-                                                               mb.[Description]
+                                               SELECT DISTINCT mb.partNumMBOM,
+                                                               mb.descMBOM
                                                  FROM Master_BOM mb
                                            )
-                                           dmb ON dmb.[Son P/N Items] = s.[Son P/N Items]
+                                           dmb ON dmb.partNumMBOM = s.partNumMBOM
                                            where s.delta<>0
                                 )
                                 z
                                 LEFT OUTER JOIN
                                 (
-                                    SELECT DISTINCT nb.[stx_num],
-                                                    nb.[Value]
+                                    SELECT DISTINCT nb.partNumNBOM,
+                                                    nb.descNBOM
                                       FROM New_BOM nb
                                 )
-                                dnb ON dnb.[stx_num] = z.[stx_num]
+                                dnb ON dnb.partNumNBOM = z.partNumNBOM

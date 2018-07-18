@@ -37,7 +37,9 @@ namespace BOMComparer
             //dataGridView1.Hide();
 
         }
-
+        public void enableCompareBTN (bool enable){
+            compareBTN.Enabled = enable;
+        }
         /// <summary>
         /// imports Master BOM excel file to this form
         /// </summary>
@@ -104,7 +106,7 @@ namespace BOMComparer
                     //disable the comparison
                     compareBTN.Enabled = false;
                     //export the error table to a new excel file
-                    
+
                     string resultpath = SQLhelper.ExportFile(datagrid.errors, "Errors.xlsx", 2, newDirpath);
                     improvedpath = newDirpath + "-Error";
                     System.IO.Directory.Move(newDirpath, improvedpath);
@@ -122,11 +124,11 @@ namespace BOMComparer
                 newFilepaths[0] = datagrid.Export(0, filepaths[0].Substring(filepaths[0].LastIndexOf('\\') + 1), 0, newDirpath);
                 newFilepaths[1] = datagrid.Export(1, filepaths[1].Substring(filepaths[1].LastIndexOf('\\') + 1), 0, newDirpath);
 
-                
-                   
 
 
-                
+
+
+
                 //draw row index in row headers in the datagrid
                 this.dataGridView1.RowPostPaint += new DataGridViewRowPostPaintEventHandler(this.dataGridView1_RowPostPaint);
                 this.dataGridView2.RowPostPaint += new DataGridViewRowPostPaintEventHandler(this.dataGridView2_RowPostPaint);

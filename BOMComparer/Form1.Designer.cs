@@ -160,7 +160,7 @@
             this.Controls.Add(this.importmbBTN);
             this.Controls.Add(this.dataGridView1);
             this.Name = "Form1";
-            this.Text = "BOMComparer v1.01";
+            this.Text = "BOMComparer v1.02";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
             this.ResumeLayout(false);
@@ -178,7 +178,7 @@
         private System.Windows.Forms.DataGridView dataGridView2;
         private System.Windows.Forms.Label mbLBL;
         private System.Windows.Forms.Label nbLBL;
-        private System.Windows.Forms.Button saveBTN;
+        public System.Windows.Forms.Button saveBTN;
     }
 }
 

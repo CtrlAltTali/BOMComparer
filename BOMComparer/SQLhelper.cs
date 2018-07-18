@@ -25,50 +25,50 @@ namespace BOMComparer
             formats[0] = new string[7];
             formats[1] = new string[7];
 
-            //formats[0][0] = TABLEFORMAT.userChosenCoulomnName["ReferenceMBOM"];
-            //formats[0][1] = TABLEFORMAT.userChosenCoulomnName["partNumMBOM"];
-            //formats[0][2] = TABLEFORMAT.userChosenCoulomnName["descMBOM"];
-            //formats[0][3] = TABLEFORMAT.userChosenCoulomnName["ReferenceNBOM"];
-            //formats[0][4] = TABLEFORMAT.userChosenCoulomnName["partNumNBOM"];
-            //formats[0][5] = TABLEFORMAT.userChosenCoulomnName["descNBOM"];
-            //formats[0][6] = "status";
+            formats[0][0] = TABLEFORMAT.userChosenCoulomnName["ReferenceMBOM"];
+            formats[0][1] = TABLEFORMAT.userChosenCoulomnName["partNumMBOM"];
+            formats[0][2] = TABLEFORMAT.userChosenCoulomnName["descMBOM"];
+            formats[0][3] = TABLEFORMAT.userChosenCoulomnName["ReferenceNBOM"];
+            formats[0][4] = TABLEFORMAT.userChosenCoulomnName["partNumNBOM"];
+            formats[0][5] = TABLEFORMAT.userChosenCoulomnName["descNBOM"];
+            formats[0][6] = "status";
 
             formats[1][0] = TABLEFORMAT.userChosenCoulomnName["qtyMBOM"];
             formats[1][1] = TABLEFORMAT.userChosenCoulomnName["partNumMBOM"];
             formats[1][2] = TABLEFORMAT.userChosenCoulomnName["descMBOM"];
             formats[1][3] = TABLEFORMAT.userChosenCoulomnName["qtyNBOM"];
             formats[1][4] = TABLEFORMAT.userChosenCoulomnName["partNumNBOM"];
-            formats[1][5] = TABLEFORMAT.userChosenCoulomnName["descMBOM"];
+            formats[1][5] = TABLEFORMAT.userChosenCoulomnName["descNBOM"];
             formats[1][6] = "delta";
 
 
         }
-        static private void SetOrdinalByFormat(DataSet dt, int index)
+        static private bool SetOrdinalByFormat(DataSet dt, int index)
         {
             try
             {
-                if (index == 1)
+                int columnIndex = 0;
+                foreach (var columnName in formats[index])
                 {
-                    DataColumnCollection cols = dt.Tables[index].Columns;
-                    cols[0].ColumnName = TABLEFORMAT.userChosenCoulomnName["qtyMBOM"];
-                    cols[1].ColumnName = TABLEFORMAT.userChosenCoulomnName["partNumMBOM"];
-                    cols[2].ColumnName = TABLEFORMAT.userChosenCoulomnName["qtyNBOM"];
-                    cols[3].ColumnName = TABLEFORMAT.userChosenCoulomnName["partNumNBOM"];
-                    cols[4].ColumnName = "delta";
-                    cols[5].ColumnName = TABLEFORMAT.userChosenCoulomnName["descMBOM"];
-                    cols[6].ColumnName = TABLEFORMAT.userChosenCoulomnName["descNBOM"];
+                    dt.Tables[index].Columns[columnName].SetOrdinal(columnIndex);
+                    columnIndex++;
                 }
-
-                for (int j = 0; j < formats[index].Length; j++)
-                {
-                    dt.Tables[index].Columns[formats[index][j]].SetOrdinal(j);
-                }
+                
             }
             catch (Exception e)
             {
+              
                 MessageBox.Show(e.Message);
-            }
+                if(e is DuplicateNameException)
+                {
+                    Form1 f = new Form1();
+                    f.enableCompareBTN(false);
 
+                }
+                
+                return false;    
+            }
+            return true;
         }
         /// <summary>
         /// Exports a dataset into an excel file. parameter "filecode" is used to 
@@ -86,55 +86,74 @@ namespace BOMComparer
         /// </returns>
         public static string ExportFile(DataSet dtset, string filename, int filecode, string destinationpath)
         {
+            string newpath = "";
+            bool allowedtocompare = false;
             if (filecode == 1)
             {
+                TABLEFORMAT.userChosenCoulomnName["qtyNBOM"] = "qty_new";
+                TABLEFORMAT.userChosenCoulomnName["qtyMBOM"] = "qty_master";
                 InitFormats();
-                SetOrdinalByFormat(dtset, 1);
+                bool a = SetOrdinalByFormat(dtset, 1);
+                bool b = SetOrdinalByFormat(dtset, 0);
+                allowedtocompare = a && b;
             }
-
-            //creates a new name for the file
-            string prefix = filename.Substring(0, filename.LastIndexOf('.'));
-            string suffix = filename.Substring(filename.LastIndexOf('.'));
-            string newpath = destinationpath + "\\" + prefix + "_new" + suffix;
-
-            //creates an excel document
-            CreateExcelFile.CreateExcelDocument(dtset, newpath);
-
-            //if the user needs to know...
-            if (filecode != 0)
+            else allowedtocompare = true;
+            if (allowedtocompare)
             {
-                if (filecode == 1)
-                    ColorFile(newpath);
-                MessageBox.Show("You can find the new file in: " + newpath);
-            }
+                //creates a new name for the file
+                string prefix = filename.Substring(0, filename.LastIndexOf('.'));
+                string suffix = filename.Substring(filename.LastIndexOf('.'));
+                newpath = destinationpath + "\\" + prefix + "_new" + suffix;
 
+                //creates an excel document
+                CreateExcelFile.CreateExcelDocument(dtset, newpath);
+
+                //if the user needs to know...
+                if (filecode != 0)
+                {
+                    if (filecode == 1)
+                        ColorFile(newpath);
+                    MessageBox.Show("You can find the new file in: " + newpath);
+                }
+            }
+            
             return newpath;
         }
 
         private static void ColorFile(string path)
         {
+            Dictionary<int, Color> colorcodes = new Dictionary<int, Color>();
+            colorcodes.Add(0, Color.LightBlue);
+            colorcodes.Add(1, Color.LightGreen);
+            colorcodes.Add(2, Color.Orange);
+
+            Dictionary<string, int> namecodes = new Dictionary<string, int>();
+            namecodes.Add(TABLEFORMAT.userChosenCoulomnName["partNumMBOM"], 0);
+            namecodes.Add(TABLEFORMAT.userChosenCoulomnName["partNumNBOM"], 1);
+            namecodes.Add(TABLEFORMAT.userChosenCoulomnName["descMBOM"], 0);
+            namecodes.Add(TABLEFORMAT.userChosenCoulomnName["descNBOM"], 1);
+            namecodes.Add(TABLEFORMAT.userChosenCoulomnName["ReferenceMBOM"], 0);
+            namecodes.Add(TABLEFORMAT.userChosenCoulomnName["ReferenceNBOM"], 1);
+            namecodes.Add(TABLEFORMAT.userChosenCoulomnName["qtyMBOM"], 0);
+            namecodes.Add(TABLEFORMAT.userChosenCoulomnName["qtyNBOM"], 1);
+            namecodes.Add("status", 2);
+            namecodes.Add("delta", 2);
+
             Microsoft.Office.Interop.Excel.Application excel = new Microsoft.Office.Interop.Excel.Application();
             Workbook wb = excel.Workbooks.Open(path);
             string sheet1 = "Change in References";
             string sheet2 = "Material Change";
 
             wb.Sheets[sheet1].Columns.AutoFit();
-            wb.Sheets[sheet1].Cells(1, 1).interior.color = Color.LightBlue;
-            wb.Sheets[sheet1].Cells(1, 2).interior.color = Color.LightBlue;
-            wb.Sheets[sheet1].Cells(1, 3).interior.color = Color.LightBlue;
-            wb.Sheets[sheet1].Cells(1, 4).interior.color = Color.LightGreen;
-            wb.Sheets[sheet1].Cells(1, 5).interior.color = Color.LightGreen;
-            wb.Sheets[sheet1].Cells(1, 6).interior.color = Color.LightGreen;
-            wb.Sheets[sheet1].Cells(1, 7).interior.color = Color.Orange;
-
             wb.Sheets[sheet2].Columns.AutoFit();
-            wb.Sheets[sheet2].Cells(1, 1).interior.color = Color.LightBlue;
-            wb.Sheets[sheet2].Cells(1, 2).interior.color = Color.LightBlue;
-            wb.Sheets[sheet2].Cells(1, 3).interior.color = Color.LightBlue;
-            wb.Sheets[sheet2].Cells(1, 4).interior.color = Color.LightGreen;
-            wb.Sheets[sheet2].Cells(1, 5).interior.color = Color.LightGreen;
-            wb.Sheets[sheet2].Cells(1, 6).interior.color = Color.LightGreen;
-            wb.Sheets[sheet2].Cells(1, 7).interior.color = Color.Orange;
+            for (int i = 1; i < 8; i++)
+            {
+                string colname = wb.Sheets[sheet1].Cells(1, i).value;
+                wb.Sheets[sheet1].Cells(1, i).interior.color = colorcodes[namecodes[colname]];
+                colname = wb.Sheets[sheet2].Cells(1, i).value;
+                wb.Sheets[sheet2].Cells(1, i).interior.color = colorcodes[namecodes[colname]];
+            }
+
 
             wb.Save();
 
@@ -408,14 +427,14 @@ namespace BOMComparer
                 }
             }
             //edit the query according the column names the user chose when "build" was pressed
-            query = query.Replace("Son P/N Items", TABLEFORMAT.userChosenCoulomnName["partNumMBOM"]);
-            query = query.Replace("stx_num", TABLEFORMAT.userChosenCoulomnName["partNumNBOM"]);
-            query = query.Replace("Description", TABLEFORMAT.userChosenCoulomnName["descMBOM"]);
-            query = query.Replace("Value", TABLEFORMAT.userChosenCoulomnName["descNBOM"]);
-            query = query.Replace("Location", TABLEFORMAT.userChosenCoulomnName["ReferenceMBOM"]);
-            query = query.Replace("Part Reference", TABLEFORMAT.userChosenCoulomnName["ReferenceNBOM"]);
-            query = query.Replace("QTY", TABLEFORMAT.userChosenCoulomnName["qtyMBOM"]);
-            query = query.Replace("Quantity", TABLEFORMAT.userChosenCoulomnName["qtyNBOM"]);
+            query = query.Replace("partNumMBOM", "[" + TABLEFORMAT.userChosenCoulomnName["partNumMBOM"] + "]");
+            query = query.Replace("partNumNBOM", "[" + TABLEFORMAT.userChosenCoulomnName["partNumNBOM"] + "]");
+            query = query.Replace("descMBOM", "[" + TABLEFORMAT.userChosenCoulomnName["descMBOM"] + "]");
+            query = query.Replace("descNBOM", "[" + TABLEFORMAT.userChosenCoulomnName["descNBOM"] + "]");
+            query = query.Replace("ReferenceMBOM", "[" + TABLEFORMAT.userChosenCoulomnName["ReferenceMBOM"] + "]");
+            query = query.Replace("ReferenceNBOM", "[" + TABLEFORMAT.userChosenCoulomnName["ReferenceNBOM"] + "]");
+            query = query.Replace("qtyMBOM", "[" + TABLEFORMAT.userChosenCoulomnName["qtyMBOM"] + "]");
+            query = query.Replace("qtyNBOM", "[" + TABLEFORMAT.userChosenCoulomnName["qtyNBOM"] + "]");
 
             return query;
         }
