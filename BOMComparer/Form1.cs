@@ -41,7 +41,8 @@ namespace BOMComparer
             //dataGridView1.Hide();
 
         }
-        public void enableCompareBTN (bool enable){
+        public void enableCompareBTN(bool enable)
+        {
             compareBTN.Enabled = enable;
         }
         /// <summary>
@@ -89,7 +90,7 @@ namespace BOMComparer
             //make new dir to the new files
             string currentDate = DateTime.Now.ToString("dd-MM-yyyy");
             string currenntTime = DateTime.Now.ToString("hh:mm:ss").Replace(':', '-');
-            newDirpath = Path.Combine(basedir, currentDate + "_" + currenntTime);
+            newDirpath = Path.Combine(basedir, currentDate + "_" + currenntTime + "_" + bnameTB.Text + "_");
             Directory.CreateDirectory(newDirpath);
 
             //open the field mapper window

@@ -37,6 +37,8 @@
             this.mbLBL = new System.Windows.Forms.Label();
             this.nbLBL = new System.Windows.Forms.Label();
             this.saveBTN = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
+            this.bnameTB = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
             this.SuspendLayout();
@@ -68,7 +70,7 @@
             this.compareBTN.BackColor = System.Drawing.Color.LightYellow;
             this.compareBTN.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.compareBTN.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.compareBTN.Location = new System.Drawing.Point(1231, 344);
+            this.compareBTN.Location = new System.Drawing.Point(1231, 389);
             this.compareBTN.Name = "compareBTN";
             this.compareBTN.Size = new System.Drawing.Size(169, 40);
             this.compareBTN.TabIndex = 8;
@@ -94,7 +96,7 @@
             this.buildBTN.BackColor = System.Drawing.Color.PeachPuff;
             this.buildBTN.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.buildBTN.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.buildBTN.Location = new System.Drawing.Point(1231, 298);
+            this.buildBTN.Location = new System.Drawing.Point(1231, 348);
             this.buildBTN.Name = "buildBTN";
             this.buildBTN.Size = new System.Drawing.Size(169, 35);
             this.buildBTN.TabIndex = 10;
@@ -136,7 +138,7 @@
             this.saveBTN.BackColor = System.Drawing.Color.LavenderBlush;
             this.saveBTN.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.saveBTN.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.saveBTN.Location = new System.Drawing.Point(1231, 464);
+            this.saveBTN.Location = new System.Drawing.Point(1231, 528);
             this.saveBTN.Name = "saveBTN";
             this.saveBTN.Size = new System.Drawing.Size(169, 72);
             this.saveBTN.TabIndex = 15;
@@ -144,12 +146,32 @@
             this.saveBTN.UseVisualStyleBackColor = false;
             this.saveBTN.Click += new System.EventHandler(this.saveBTN_Click);
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(1231, 220);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(121, 24);
+            this.label1.TabIndex = 16;
+            this.label1.Text = "Board Name:";
+            // 
+            // bnameTB
+            // 
+            this.bnameTB.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bnameTB.Location = new System.Drawing.Point(1235, 247);
+            this.bnameTB.Name = "bnameTB";
+            this.bnameTB.Size = new System.Drawing.Size(165, 24);
+            this.bnameTB.TabIndex = 17;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.LightSteelBlue;
             this.ClientSize = new System.Drawing.Size(1419, 687);
+            this.Controls.Add(this.bnameTB);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.saveBTN);
             this.Controls.Add(this.nbLBL);
             this.Controls.Add(this.mbLBL);
@@ -179,6 +201,8 @@
         private System.Windows.Forms.Label mbLBL;
         private System.Windows.Forms.Label nbLBL;
         public System.Windows.Forms.Button saveBTN;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox bnameTB;
     }
 }
 
