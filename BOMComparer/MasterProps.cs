@@ -93,13 +93,33 @@ namespace BOMComparer
             bool g = descMBOMcb.Text != "";
             bool h = descNBOMcb.Text != "";
 
-            if (a && b && c && d && j && f && g && h)
+            if (a && b && c && d && j && f && g && h&&ToLegal())
             {
                 TABLEFORMAT.UserChose = true;
                 this.Hide();
             }
-            else
-                MessageBox.Show("Please choose fields in all boxes");
+
+        }
+        private bool ToLegal()
+        {
+            string[] texts = new string[8] { refMBOMcb.Text , pnumMBOMcb.Text , refNBOMcb.Text ,
+            pnumNBOMcb.Text, qtyMBOMcb.Text,qtyNBOMcb.Text,descMBOMcb.Text, descNBOMcb.Text};
+            bool legal = true;
+            for (int i = 0; i < texts.Length; i++)
+            {
+                for (int j = 0; j < texts.Length; j++)
+                {
+                    if (i != j)
+                    {
+                        if (texts[i] == texts[j])
+                            legal = false;
+                    }
+                }
+            }
+
+            if (!legal)
+                MessageBox.Show("Please choose different names for columns");
+            return legal;
         }
     }
 }
