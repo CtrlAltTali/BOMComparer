@@ -34,11 +34,10 @@
             this.importnbBTN = new System.Windows.Forms.Button();
             this.buildBTN = new System.Windows.Forms.Button();
             this.dataGridView2 = new System.Windows.Forms.DataGridView();
-            this.mbLBL = new System.Windows.Forms.Label();
-            this.nbLBL = new System.Windows.Forms.Label();
-            this.saveBTN = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.bnameTB = new System.Windows.Forms.TextBox();
+            this.outputBTN = new System.Windows.Forms.Button();
+            this.dirtb = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
             this.SuspendLayout();
@@ -47,9 +46,9 @@
             // 
             this.dataGridView1.AllowUserToAddRows = false;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(12, 42);
+            this.dataGridView1.Location = new System.Drawing.Point(12, 92);
             this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(626, 640);
+            this.dataGridView1.Size = new System.Drawing.Size(760, 590);
             this.dataGridView1.TabIndex = 0;
             // 
             // importmbBTN
@@ -57,9 +56,9 @@
             this.importmbBTN.BackColor = System.Drawing.SystemColors.InactiveCaption;
             this.importmbBTN.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.importmbBTN.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.importmbBTN.Location = new System.Drawing.Point(1231, 42);
+            this.importmbBTN.Location = new System.Drawing.Point(17, 11);
             this.importmbBTN.Name = "importmbBTN";
-            this.importmbBTN.Size = new System.Drawing.Size(169, 69);
+            this.importmbBTN.Size = new System.Drawing.Size(301, 41);
             this.importmbBTN.TabIndex = 6;
             this.importmbBTN.Text = "Import Master BOM";
             this.importmbBTN.UseVisualStyleBackColor = false;
@@ -70,9 +69,9 @@
             this.compareBTN.BackColor = System.Drawing.Color.LightYellow;
             this.compareBTN.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.compareBTN.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.compareBTN.Location = new System.Drawing.Point(1231, 389);
+            this.compareBTN.Location = new System.Drawing.Point(1308, 46);
             this.compareBTN.Name = "compareBTN";
-            this.compareBTN.Size = new System.Drawing.Size(169, 40);
+            this.compareBTN.Size = new System.Drawing.Size(197, 40);
             this.compareBTN.TabIndex = 8;
             this.compareBTN.Text = "Compare";
             this.compareBTN.UseVisualStyleBackColor = false;
@@ -83,9 +82,9 @@
             this.importnbBTN.BackColor = System.Drawing.SystemColors.InactiveCaption;
             this.importnbBTN.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.importnbBTN.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.importnbBTN.Location = new System.Drawing.Point(1231, 117);
+            this.importnbBTN.Location = new System.Drawing.Point(324, 11);
             this.importnbBTN.Name = "importnbBTN";
-            this.importnbBTN.Size = new System.Drawing.Size(169, 72);
+            this.importnbBTN.Size = new System.Drawing.Size(280, 41);
             this.importnbBTN.TabIndex = 9;
             this.importnbBTN.Text = "Import New BOM";
             this.importnbBTN.UseVisualStyleBackColor = false;
@@ -96,11 +95,11 @@
             this.buildBTN.BackColor = System.Drawing.Color.PeachPuff;
             this.buildBTN.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.buildBTN.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.buildBTN.Location = new System.Drawing.Point(1231, 348);
+            this.buildBTN.Location = new System.Drawing.Point(1308, 5);
             this.buildBTN.Name = "buildBTN";
-            this.buildBTN.Size = new System.Drawing.Size(169, 35);
+            this.buildBTN.Size = new System.Drawing.Size(197, 35);
             this.buildBTN.TabIndex = 10;
-            this.buildBTN.Text = "Build";
+            this.buildBTN.Text = "Column Mapping";
             this.buildBTN.UseVisualStyleBackColor = false;
             this.buildBTN.Click += new System.EventHandler(this.buildBTN_Click);
             // 
@@ -108,49 +107,18 @@
             // 
             this.dataGridView2.AllowUserToAddRows = false;
             this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView2.Location = new System.Drawing.Point(644, 42);
+            this.dataGridView2.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnKeystroke;
+            this.dataGridView2.Location = new System.Drawing.Point(778, 92);
             this.dataGridView2.Name = "dataGridView2";
-            this.dataGridView2.Size = new System.Drawing.Size(581, 640);
+            this.dataGridView2.ReadOnly = true;
+            this.dataGridView2.Size = new System.Drawing.Size(735, 590);
             this.dataGridView2.TabIndex = 11;
-            // 
-            // mbLBL
-            // 
-            this.mbLBL.AutoSize = true;
-            this.mbLBL.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.mbLBL.Location = new System.Drawing.Point(12, 14);
-            this.mbLBL.Name = "mbLBL";
-            this.mbLBL.Size = new System.Drawing.Size(149, 25);
-            this.mbLBL.TabIndex = 12;
-            this.mbLBL.Text = "Master BOM:";
-            // 
-            // nbLBL
-            // 
-            this.nbLBL.AutoSize = true;
-            this.nbLBL.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.nbLBL.Location = new System.Drawing.Point(644, 14);
-            this.nbLBL.Name = "nbLBL";
-            this.nbLBL.Size = new System.Drawing.Size(122, 25);
-            this.nbLBL.TabIndex = 13;
-            this.nbLBL.Text = "New BOM:";
-            // 
-            // saveBTN
-            // 
-            this.saveBTN.BackColor = System.Drawing.Color.LavenderBlush;
-            this.saveBTN.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.saveBTN.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.saveBTN.Location = new System.Drawing.Point(1231, 528);
-            this.saveBTN.Name = "saveBTN";
-            this.saveBTN.Size = new System.Drawing.Size(169, 72);
-            this.saveBTN.TabIndex = 15;
-            this.saveBTN.Text = "Save Changes";
-            this.saveBTN.UseVisualStyleBackColor = false;
-            this.saveBTN.Click += new System.EventHandler(this.saveBTN_Click);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(1231, 220);
+            this.label1.Location = new System.Drawing.Point(610, 11);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(121, 24);
             this.label1.TabIndex = 16;
@@ -159,22 +127,40 @@
             // bnameTB
             // 
             this.bnameTB.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.bnameTB.Location = new System.Drawing.Point(1235, 247);
+            this.bnameTB.Location = new System.Drawing.Point(614, 38);
             this.bnameTB.Name = "bnameTB";
-            this.bnameTB.Size = new System.Drawing.Size(165, 24);
+            this.bnameTB.Size = new System.Drawing.Size(117, 24);
             this.bnameTB.TabIndex = 17;
+            // 
+            // outputBTN
+            // 
+            this.outputBTN.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.outputBTN.Location = new System.Drawing.Point(751, 5);
+            this.outputBTN.Name = "outputBTN";
+            this.outputBTN.Size = new System.Drawing.Size(122, 35);
+            this.outputBTN.TabIndex = 18;
+            this.outputBTN.Text = "Output Folder";
+            this.outputBTN.UseVisualStyleBackColor = true;
+            this.outputBTN.Click += new System.EventHandler(this.outputBTN_Click);
+            // 
+            // dirtb
+            // 
+            this.dirtb.Location = new System.Drawing.Point(751, 42);
+            this.dirtb.Name = "dirtb";
+            this.dirtb.ReadOnly = true;
+            this.dirtb.Size = new System.Drawing.Size(354, 20);
+            this.dirtb.TabIndex = 19;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.LightSteelBlue;
-            this.ClientSize = new System.Drawing.Size(1419, 687);
+            this.ClientSize = new System.Drawing.Size(1517, 687);
+            this.Controls.Add(this.dirtb);
+            this.Controls.Add(this.outputBTN);
             this.Controls.Add(this.bnameTB);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.saveBTN);
-            this.Controls.Add(this.nbLBL);
-            this.Controls.Add(this.mbLBL);
             this.Controls.Add(this.dataGridView2);
             this.Controls.Add(this.buildBTN);
             this.Controls.Add(this.importnbBTN);
@@ -198,11 +184,10 @@
         private System.Windows.Forms.Button importnbBTN;
         private System.Windows.Forms.Button buildBTN;
         private System.Windows.Forms.DataGridView dataGridView2;
-        private System.Windows.Forms.Label mbLBL;
-        private System.Windows.Forms.Label nbLBL;
-        public System.Windows.Forms.Button saveBTN;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox bnameTB;
+        private System.Windows.Forms.Button outputBTN;
+        private System.Windows.Forms.TextBox dirtb;
     }
 }
 

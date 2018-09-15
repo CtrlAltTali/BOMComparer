@@ -28,6 +28,7 @@ namespace BOMComparer
         bool compared = false;
         string newDirpath = "";
         string basedir = "";
+
         string[] tablenames = new string[2] { "Master BOM", "New BOM" };
         public Form1()
         {
@@ -220,6 +221,27 @@ namespace BOMComparer
                     table2.Rows[i][j] = dataGridView2[j, i].Value;
                 }
 
+            }
+        }
+
+  
+
+        private void outputBTN_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                FolderBrowserDialog op = new FolderBrowserDialog();
+                if(op.ShowDialog() == DialogResult.OK)
+                {
+                    basedir = op.SelectedPath + "\\Reports";
+                }
+                if (!Directory.Exists(basedir))
+                    Directory.CreateDirectory(basedir);
+                dirtb.Text = basedir;
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
         }
     }
