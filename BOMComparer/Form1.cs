@@ -35,9 +35,11 @@ namespace BOMComparer
             InitializeComponent();
             compareBTN.Enabled = false;
             buildBTN.Enabled = false;
-            basedir = Application.StartupPath + "\\Reports";
-            if (!Directory.Exists(basedir))
-                Directory.CreateDirectory(basedir);
+            //basedir = Application.StartupPath + "\\Reports";
+            //if (!Directory.Exists(basedir))
+            //    Directory.CreateDirectory(basedir);
+            basedir = BOMComparer.ouput.Default.outputPath;
+            dirtb.Text = BOMComparer.ouput.Default.outputPath;
             //string[] diffQuery = System.IO.File.ReadAllLines("sqlite_diff.txt");
             //dataGridView1.Hide();
 
@@ -238,6 +240,8 @@ namespace BOMComparer
                 if (!Directory.Exists(basedir))
                     Directory.CreateDirectory(basedir);
                 dirtb.Text = basedir;
+                BOMComparer.ouput.Default.outputPath = basedir;
+                BOMComparer.ouput.Default.Save();
             }
             catch(Exception ex)
             {

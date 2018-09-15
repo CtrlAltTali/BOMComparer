@@ -95,6 +95,11 @@
       <DependentUpon>MasterProps.cs</DependentUpon>
     </Compile>
     <Compile Include="Node.cs" />
+    <Compile Include="ouput.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ouput.settings</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SQLhelper.cs" />
@@ -121,6 +126,10 @@
     <None Include="MasterProperties.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>MasterProperties.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="ouput.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>ouput.Designer.cs</LastGenOutput>
     </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
