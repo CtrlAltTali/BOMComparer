@@ -148,9 +148,24 @@ namespace BOMComparer
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        private bool IsLegal(string str)
+        private bool IsLegal(string str, string flag)
         {
-            bool illegal = str[str.Length - 1] >= 65 && str[str.Length - 1] <= 90;
+            bool illegal = true;
+            switch (flag)
+            {
+                case "Location":
+                    illegal = str[str.Length - 1] >= 65 && str[str.Length - 1] <= 90;
+                    break;
+                case "PartNumber":
+                    int n = 0;
+                    foreach(char c in str)
+                    {
+                        if (!char.IsLetterOrDigit(c) && !char.IsPunctuation(c))
+                            n += 1;
+                    }
+                    if (n > 0) illegal = true;
+                    break;
+            }
             if (illegal) return false;
             else return true;
             string[] parts = new string[2] { "", "" };
@@ -223,14 +238,19 @@ namespace BOMComparer
 
         }
         /// <summary>
-        /// replaces spaces with '?'
+        /// replaces non printables with '?'
         /// </summary>
         /// <param name="str"></param>
-        /// <returns> a string with '?' instead of spaces</returns>
-        public string SearchForSpaces(string str)
+        /// <returns> a string with '?' instead of non printables</returns>
+        public string SearchForNonPrintable(string str)
         {
+            for (int i = 0; i < 32; i++)
+            {
+                if(str.Contains((char)i))
+                    str = str.Replace((char)i, '?');
+            }
             if (str.Contains(" "))
-                return str.Replace(" ", "?");
+                str = str.Replace(" ", "?");
             return str;
 
         }
@@ -359,7 +379,7 @@ namespace BOMComparer
                         //rowobjects[Son_PN_Items] = fixesitems;
                         bool containsComma = rowobjects[Location].Contains(',');
                         bool containsDash = rowobjects[Location].Contains('-');
-                        bool legalLocation = IsLegal(rowobjects[Location]);
+                        bool legalLocation = IsLegal(rowobjects[Location],"Location");
 
 
                         if ((containsDash || containsComma) && legalLocation && validQuantity)
@@ -489,7 +509,7 @@ namespace BOMComparer
             {
                 //search for spaces in "items"
                 string items = datagrid.Rows[i].Cells[Son_PN_Items].Value.ToString();
-                items = SearchForSpaces(items);
+                items = SearchForNonPrintable(items);
 
                 //update the new "items" value in the dataset
                 DtSet[sheetindex].Tables[0].Rows[i][Son_PN_Items] = items;
@@ -513,7 +533,7 @@ namespace BOMComparer
                     bool hasspaces = items.Contains("?");
 
                     //location is legal
-                    bool legalLocation = IsLegal(location);
+                    bool legalLocation = IsLegal(location,"Location");
 
                     //if one of them is false
                     if (!validQuantity || hasspaces || !legalLocation)
@@ -524,7 +544,7 @@ namespace BOMComparer
                         {
                             if (err == "-1")
                                 firstErrorIndex[sheetindex] = i.ToString() + "S";
-                            error = "Row contains spaces";
+                            error = "Row contains spaces or non printables";
                         }
 
                         else if (!validQuantity)
