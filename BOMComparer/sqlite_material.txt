@@ -1,8 +1,6 @@
-CREATE TABLE material AS SELECT z.*,
-                                dnb.descNBOM
+CREATE TABLE material AS SELECT z.*
                            FROM (
-                                    SELECT s.*,
-                                           dmb.descMBOM
+                                    SELECT s.*
                                       FROM (
                                                SELECT t.*,
                                                       ifnull(t.qty_master, 0) - ifnull(t.qty_new, 0) AS delta
@@ -68,8 +66,7 @@ CREATE TABLE material AS SELECT z.*,
                                            s
                                            LEFT OUTER JOIN
                                            (
-                                               SELECT DISTINCT mb.partNumMBOM,
-                                                               mb.descMBOM
+                                               SELECT DISTINCT mb.partNumMBOM
                                                  FROM Master_BOM mb
                                            )
                                            dmb ON dmb.partNumMBOM = s.partNumMBOM
@@ -78,8 +75,7 @@ CREATE TABLE material AS SELECT z.*,
                                 z
                                 LEFT OUTER JOIN
                                 (
-                                    SELECT DISTINCT nb.partNumNBOM,
-                                                    nb.descNBOM
+                                    SELECT DISTINCT nb.partNumNBOM
                                       FROM New_BOM nb
                                 )
                                 dnb ON dnb.partNumNBOM = z.partNumNBOM

@@ -88,6 +88,7 @@ namespace BOMComparer
 
         public string Export(int sheetindex, string filename, int filecode, string destinationpath)
         {
+           // DtSet[sheetindex].DataSetName = sheetindex.ToString();
             return SQLhelper.ExportFile(DtSet[sheetindex], filename, filecode, destinationpath);
         }
 

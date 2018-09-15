@@ -17,7 +17,7 @@ namespace BOMComparer
         static public bool[] legalTable = new bool[2] { true, true };
 
         static public int Son_PN_Items { get; set; }
-        static public int Description { get; set; }
+        //static public int Description { get; set; }
         static public int QTY { get; set; }
         static public int Location { get; set; }
 

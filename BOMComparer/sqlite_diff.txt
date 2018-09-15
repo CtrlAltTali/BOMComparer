@@ -2,10 +2,8 @@ CREATE TABLE diff AS SELECT *
                        FROM (
                                 SELECT mb.ReferenceMBOM,
                                        mb.partNumMBOM,
-                                       mb.descMBOM,
                                        nb.ReferenceNBOM,
                                        nb.partNumNBOM,
-                                       nb.descNBOM,
                                       CASE WHEN mb.partNumMBOM <> nb.partNumNBOM THEN "changed" WHEN mb.partNumMBOM = nb.partNumNBOM AND 
                                                                                                       mb.ReferenceMBOM IS NOT NULL AND 
                                                                                                       nb.ReferenceNBOM IS NOT NULL THEN "same" END status
@@ -17,10 +15,8 @@ CREATE TABLE diff AS SELECT *
                                 UNION ALL
                                 SELECT mb.ReferenceMBOM,
                                        mb.partNumMBOM,
-                                       mb.descMBOM,
                                        nb.ReferenceNBOM,
                                        nb.partNumNBOM,
-                                       nb.descNBOM,
                                           'removed' AS status
                                   FROM Master_BOM mb
                                        LEFT OUTER JOIN
@@ -30,10 +26,8 @@ CREATE TABLE diff AS SELECT *
                                 UNION ALL
                                 SELECT mb.ReferenceMBOM,
                                        mb.partNumMBOM,
-                                       mb.descMBOM,
                                        nb.ReferenceNBOM,
                                        nb.partNumNBOM,
-                                       nb.descNBOM,
                                           'added' AS status
                                   FROM New_BOM nb
                                        LEFT OUTER JOIN

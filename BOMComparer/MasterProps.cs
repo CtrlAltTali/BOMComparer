@@ -12,10 +12,10 @@ namespace BOMComparer
 {
     public partial class MasterProps : Form
     {
+
         public MasterProps()
         {
             InitializeComponent();
-
             //add to combo boxes all the columns in the table so the user could choose
             AddToComboBox(refMBOMcb, TABLEFORMAT.masterBOMcols);
             AddToComboBox(pnumMBOMcb, TABLEFORMAT.masterBOMcols);
@@ -23,8 +23,6 @@ namespace BOMComparer
             AddToComboBox(pnumNBOMcb, TABLEFORMAT.newBOMcols);
             AddToComboBox(qtyMBOMcb, TABLEFORMAT.masterBOMcols);
             AddToComboBox(qtyNBOMcb, TABLEFORMAT.newBOMcols);
-            AddToComboBox(descMBOMcb, TABLEFORMAT.masterBOMcols);
-            AddToComboBox(descNBOMcb, TABLEFORMAT.newBOMcols);
 
             //put a default value in the combobox so the user won't click too much
             refMBOMcb.Text = MasterProperties.Default.ReferenceMBOM;
@@ -33,8 +31,6 @@ namespace BOMComparer
             pnumNBOMcb.Text = MasterProperties.Default.partNumNBOM;
             qtyMBOMcb.Text = MasterProperties.Default.qtyMBOM;
             qtyNBOMcb.Text = MasterProperties.Default.qtyNBOM;
-            descMBOMcb.Text = MasterProperties.Default.descMBOM;
-            descNBOMcb.Text = MasterProperties.Default.descNBOM;
 
         }
 
@@ -70,8 +66,8 @@ namespace BOMComparer
             TABLEFORMAT.userChosenIndex.Add("partNumNBOM", pnumNBOMcb.SelectedIndex);
             TABLEFORMAT.userChosenIndex.Add("qtyMBOM", qtyMBOMcb.SelectedIndex);
             TABLEFORMAT.userChosenIndex.Add("qtyNBOM", qtyNBOMcb.SelectedIndex);
-            TABLEFORMAT.userChosenIndex.Add("descMBOM", descMBOMcb.SelectedIndex);
-            TABLEFORMAT.userChosenIndex.Add("descNBOM", descNBOMcb.SelectedIndex);
+            //TABLEFORMAT.userChosenIndex.Add("descMBOM", descMBOMcb.SelectedIndex);
+            //TABLEFORMAT.userChosenIndex.Add("descNBOM", descNBOMcb.SelectedIndex);
 
             //add to "userChosenCoulomnName" dictionary
             TABLEFORMAT.userChosenCoulomnName.Add("ReferenceMBOM", refMBOMcb.Text);
@@ -80,8 +76,8 @@ namespace BOMComparer
             TABLEFORMAT.userChosenCoulomnName.Add("partNumNBOM", pnumNBOMcb.Text);
             TABLEFORMAT.userChosenCoulomnName.Add("qtyMBOM", qtyMBOMcb.Text);
             TABLEFORMAT.userChosenCoulomnName.Add("qtyNBOM", qtyNBOMcb.Text);
-            TABLEFORMAT.userChosenCoulomnName.Add("descMBOM", descMBOMcb.Text);
-            TABLEFORMAT.userChosenCoulomnName.Add("descNBOM", descNBOMcb.Text);
+            //TABLEFORMAT.userChosenCoulomnName.Add("descMBOM", descMBOMcb.Text);
+            //TABLEFORMAT.userChosenCoulomnName.Add("descNBOM", descNBOMcb.Text);
 
             //no combo mox is empty
             bool a = refMBOMcb.Text != "";
@@ -90,10 +86,10 @@ namespace BOMComparer
             bool d = pnumNBOMcb.Text != "";
             bool j = qtyMBOMcb.Text != "";
             bool f = qtyNBOMcb.Text != "";
-            bool g = descMBOMcb.Text != "";
-            bool h = descNBOMcb.Text != "";
+            //bool g = descMBOMcb.Text != "";
+            //bool h = descNBOMcb.Text != "";
 
-            if (a && b && c && d && j && f && g && h&&ToLegal())
+            if (a && b && c && d && j && f /*&& g && h*/&&ToLegal())
             {
                 TABLEFORMAT.UserChose = true;
                 this.Hide();
@@ -102,8 +98,8 @@ namespace BOMComparer
         }
         private bool ToLegal()
         {
-            string[] texts = new string[8] { refMBOMcb.Text , pnumMBOMcb.Text , refNBOMcb.Text ,
-            pnumNBOMcb.Text, qtyMBOMcb.Text,qtyNBOMcb.Text,descMBOMcb.Text, descNBOMcb.Text};
+            string[] texts = new string[6] { refMBOMcb.Text , pnumMBOMcb.Text , refNBOMcb.Text ,
+            pnumNBOMcb.Text, qtyMBOMcb.Text,qtyNBOMcb.Text/*,descMBOMcb.Text, descNBOMcb.Text*/};
             bool legal = true;
             for (int i = 0; i < texts.Length; i++)
             {

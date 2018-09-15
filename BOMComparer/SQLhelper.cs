@@ -19,27 +19,29 @@ namespace BOMComparer
     {
         public static bool created = false;
         public static bool compared = false;
+        public static string master_prefix = "_master";
+        public static string new_prefix = "_new";
         private static string[][] formats = new string[2][];
         static private void InitFormats()
         {
-            formats[0] = new string[7];
-            formats[1] = new string[7];
-
-            formats[0][0] = TABLEFORMAT.userChosenCoulomnName["ReferenceMBOM"];
-            formats[0][1] = TABLEFORMAT.userChosenCoulomnName["partNumMBOM"];
-            formats[0][2] = TABLEFORMAT.userChosenCoulomnName["descMBOM"];
-            formats[0][3] = TABLEFORMAT.userChosenCoulomnName["ReferenceNBOM"];
-            formats[0][4] = TABLEFORMAT.userChosenCoulomnName["partNumNBOM"];
-            formats[0][5] = TABLEFORMAT.userChosenCoulomnName["descNBOM"];
-            formats[0][6] = "status";
+            formats[0] = new string[5];
+            formats[1] = new string[5];
+            
+            formats[0][0] = TABLEFORMAT.userChosenCoulomnName["ReferenceMBOM"]+ master_prefix;
+            formats[0][1] = TABLEFORMAT.userChosenCoulomnName["partNumMBOM"]+master_prefix;
+            //formats[0][2] = TABLEFORMAT.userChosenCoulomnName["descMBOM"];
+            formats[0][2] = TABLEFORMAT.userChosenCoulomnName["ReferenceNBOM"]+new_prefix;
+            formats[0][3] = TABLEFORMAT.userChosenCoulomnName["partNumNBOM"]+new_prefix;
+            //formats[0][5] = TABLEFORMAT.userChosenCoulomnName["descNBOM"];
+            formats[0][4] = "status";
 
             formats[1][0] = TABLEFORMAT.userChosenCoulomnName["qtyMBOM"];
-            formats[1][1] = TABLEFORMAT.userChosenCoulomnName["partNumMBOM"];
-            formats[1][2] = TABLEFORMAT.userChosenCoulomnName["descMBOM"];
-            formats[1][3] = TABLEFORMAT.userChosenCoulomnName["qtyNBOM"];
-            formats[1][4] = TABLEFORMAT.userChosenCoulomnName["partNumNBOM"];
-            formats[1][5] = TABLEFORMAT.userChosenCoulomnName["descNBOM"];
-            formats[1][6] = "delta";
+            formats[1][1] = TABLEFORMAT.userChosenCoulomnName["partNumMBOM"]+master_prefix;
+            //formats[1][2] = TABLEFORMAT.userChosenCoulomnName["descMBOM"];
+            formats[1][2] = TABLEFORMAT.userChosenCoulomnName["qtyNBOM"];
+            formats[1][3] = TABLEFORMAT.userChosenCoulomnName["partNumNBOM"]+new_prefix;
+            //formats[1][5] = TABLEFORMAT.userChosenCoulomnName["descNBOM"];
+            formats[1][4] = "delta";
 
 
         }
@@ -92,12 +94,29 @@ namespace BOMComparer
             {
                 TABLEFORMAT.userChosenCoulomnName["qtyNBOM"] = "qty_new";
                 TABLEFORMAT.userChosenCoulomnName["qtyMBOM"] = "qty_master";
+                //if (dtset.Tables[0].TableName == "Change in References")
+                //{
+                    dtset.Tables[0].Columns[0].ColumnName +=master_prefix;
+                    dtset.Tables[0].Columns[1].ColumnName += master_prefix;
+                    dtset.Tables[0].Columns[2].ColumnName += new_prefix;
+                    dtset.Tables[0].Columns[3].ColumnName += new_prefix;
+                //}
+                //else if (dtset.Tables[0].TableName == "Material Change")
+                //{
+                    dtset.Tables[1].Columns[1].ColumnName += master_prefix;
+                    dtset.Tables[1].Columns[3].ColumnName += new_prefix;
+                //}
                 InitFormats();
                 bool a = SetOrdinalByFormat(dtset, 1);
                 bool b = SetOrdinalByFormat(dtset, 0);
                 allowedtocompare = a && b;
             }
             else allowedtocompare = true;
+            
+            
+
+            
+
             if (allowedtocompare)
             {
                 //creates a new name for the file
@@ -130,8 +149,8 @@ namespace BOMComparer
             Dictionary<string, int> namecodes = new Dictionary<string, int>();
             namecodes.Add(TABLEFORMAT.userChosenCoulomnName["partNumMBOM"], 0);
             namecodes.Add(TABLEFORMAT.userChosenCoulomnName["partNumNBOM"], 1);
-            namecodes.Add(TABLEFORMAT.userChosenCoulomnName["descMBOM"], 0);
-            namecodes.Add(TABLEFORMAT.userChosenCoulomnName["descNBOM"], 1);
+            //namecodes.Add(TABLEFORMAT.userChosenCoulomnName["descMBOM"], 0);
+            //namecodes.Add(TABLEFORMAT.userChosenCoulomnName["descNBOM"], 1);
             namecodes.Add(TABLEFORMAT.userChosenCoulomnName["ReferenceMBOM"], 0);
             namecodes.Add(TABLEFORMAT.userChosenCoulomnName["ReferenceNBOM"], 1);
             namecodes.Add(TABLEFORMAT.userChosenCoulomnName["qtyMBOM"], 0);
@@ -146,17 +165,29 @@ namespace BOMComparer
 
             wb.Sheets[sheet1].Columns.AutoFit();
             wb.Sheets[sheet2].Columns.AutoFit();
-            for (int i = 1; i < 8; i++)
+            for (int i = 1; i < 6; i++)
             {
                 string colname = wb.Sheets[sheet1].Cells(1, i).value;
+                colname = RemovePrefix(colname);
                 wb.Sheets[sheet1].Cells(1, i).interior.color = colorcodes[namecodes[colname]];
                 colname = wb.Sheets[sheet2].Cells(1, i).value;
+                colname = RemovePrefix(colname);
                 wb.Sheets[sheet2].Cells(1, i).interior.color = colorcodes[namecodes[colname]];
             }
 
 
             wb.Save();
 
+        }
+        static private string RemovePrefix(string name)
+        {
+            if (name.Contains("qty"))
+                return name;
+            else if (name.Contains(master_prefix))
+                name = name.Replace(master_prefix, "");
+            else if (name.Contains(new_prefix))
+                name = name.Replace(new_prefix, "");
+            return name;
         }
         /// <summary>
         /// fills datasets with the content of excel files
@@ -429,8 +460,8 @@ namespace BOMComparer
             //edit the query according the column names the user chose when "build" was pressed
             query = query.Replace("partNumMBOM", "[" + TABLEFORMAT.userChosenCoulomnName["partNumMBOM"] + "]");
             query = query.Replace("partNumNBOM", "[" + TABLEFORMAT.userChosenCoulomnName["partNumNBOM"] + "]");
-            query = query.Replace("descMBOM", "[" + TABLEFORMAT.userChosenCoulomnName["descMBOM"] + "]");
-            query = query.Replace("descNBOM", "[" + TABLEFORMAT.userChosenCoulomnName["descNBOM"] + "]");
+            //query = query.Replace("descMBOM", "[" + TABLEFORMAT.userChosenCoulomnName["descMBOM"] + "]");
+            //query = query.Replace("descNBOM", "[" + TABLEFORMAT.userChosenCoulomnName["descNBOM"] + "]");
             query = query.Replace("ReferenceMBOM", "[" + TABLEFORMAT.userChosenCoulomnName["ReferenceMBOM"] + "]");
             query = query.Replace("ReferenceNBOM", "[" + TABLEFORMAT.userChosenCoulomnName["ReferenceNBOM"] + "]");
             query = query.Replace("qtyMBOM", "[" + TABLEFORMAT.userChosenCoulomnName["qtyMBOM"] + "]");
