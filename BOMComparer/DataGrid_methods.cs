@@ -75,17 +75,34 @@ namespace BOMComparer
                     int stat;
                     //put the excel table in the data grid object
                     stat = MyCommand.Fill(DtSet[sheetindex]);
+                    AddErrorCol(sheetindex);                       
                     dataGridView.DataSource = DtSet[sheetindex].Tables[0];
                 }
                 catch (Exception e)
                 {
                     MessageBox.Show(e.Message);
                 }
-
+                
                 MyConnection.Close();
             }
         }
-
+        private void AddErrorCol(int sheetindex)
+        {
+            if (TABLEFORMAT.ignore)
+            {
+                string colname = "Error";
+                switch (sheetindex)
+                {
+                    case 0:
+                        colname += "_master";
+                        break;
+                    case 1:
+                        colname += "_new";
+                        break;
+                }
+                DtSet[sheetindex].Tables[0].Columns.Add(colname);
+            }
+        }
         public string Export(int sheetindex, string filename, int filecode, string destinationpath)
         {
            // DtSet[sheetindex].DataSetName = sheetindex.ToString();
@@ -330,6 +347,10 @@ namespace BOMComparer
         public bool BuildTable(DataGridView datagrid, int sheetindex)
         {
             bool built = false;
+            if(!DtSet[sheetindex].Tables[0].Columns.Contains("Error"+ TABLEFORMAT.suffixes[sheetindex]) && TABLEFORMAT.ignore)
+            {
+                AddErrorCol(sheetindex);
+            }
             try
             {
                 if (errors.Tables.Count < 2)
@@ -469,6 +490,8 @@ namespace BOMComparer
                     DeleteRows(toremove, sheetindex);
 
 
+                //check for errors in the updated table
+                CheckForErrors(datagrid, sheetindex, qtyInRow);
 
                 DtSet[sheetindex].Tables[0].AcceptChanges();
 
@@ -476,8 +499,7 @@ namespace BOMComparer
                 source.DataSource = DtSet[sheetindex].Tables[0];
                 datagrid.DataSource = source;
 
-                //check for errors in the updated table
-                CheckForErrors(datagrid, sheetindex, qtyInRow);
+                
 
                 //color the errors in red if they exist
                 if (tocolor.GetValue() != null)
@@ -562,7 +584,12 @@ namespace BOMComparer
                             error = "Location is illegal";
                         }
 
-
+                        if (TABLEFORMAT.ignore)
+                        {
+                            int colindex = DtSet[sheetindex].Tables[0].Columns.IndexOf("Error" + TABLEFORMAT.suffixes[sheetindex]);
+                            DtSet[sheetindex].Tables[0].Rows[i][colindex] = error;
+                        }
+                            
 
                         //now the table is not legal and we can proceed to comparison
                         TABLEFORMAT.legalTable[sheetindex] = false;

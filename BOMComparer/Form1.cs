@@ -40,6 +40,7 @@ namespace BOMComparer
             //    Directory.CreateDirectory(basedir);
             basedir = BOMComparer.ouput.Default.outputPath;
             dirtb.Text = BOMComparer.ouput.Default.outputPath;
+            TABLEFORMAT.ignore = false;
             //string[] diffQuery = System.IO.File.ReadAllLines("sqlite_diff.txt");
             //dataGridView1.Hide();
 
@@ -57,6 +58,7 @@ namespace BOMComparer
         {
             sheetindex = 0;
             compared = false;
+            compareBTN.Enabled = false;
             filepaths[0] = datagrid.OpenFileManager();
             datagrid.Import(dataGridView1, 0, filepaths[0]);
             datagrid.StoreColumns(sheetindex, dataGridView1);
@@ -73,6 +75,7 @@ namespace BOMComparer
         {
             sheetindex = 1;
             compared = false;
+            compareBTN.Enabled = false;
             filepaths[1] = datagrid.OpenFileManager();
             datagrid.Import(dataGridView2, 1, filepaths[1]);
             datagrid.StoreColumns(sheetindex, dataGridView2);
@@ -112,13 +115,16 @@ namespace BOMComparer
                 {
 
                     //disable the comparison
-                    compareBTN.Enabled = false;
+                    compareBTN.Enabled = true;
                     //export the error table to a new excel file
 
                     string resultpath = SQLhelper.ExportFile(datagrid.errors, "Errors.xlsx", 2, newDirpath);
                     improvedpath = newDirpath + "-Error";
                     System.IO.Directory.Move(newDirpath, improvedpath);
-
+                    if (ignoreCB.Checked)
+                    {
+                        MessageBox.Show("You are allowed to compare, but the comparison won't be reliable.", "Warning!");
+                    }
                 }
                 //if both legal, enable the comparison
                 else
@@ -202,6 +208,7 @@ namespace BOMComparer
 
             //export the dataset to a new excel file
             string resultpath = SQLhelper.ExportFile(results, "Comparison_Report.xlsx", 1, newDirpath);
+            compareBTN.Enabled = false;
         }
 
         private void saveBTN_Click(object sender, EventArgs e)
@@ -247,6 +254,11 @@ namespace BOMComparer
             {
                 MessageBox.Show(ex.Message);
             }
+        }
+
+        private void ignoreCB_CheckedChanged(object sender, EventArgs e)
+        {
+            TABLEFORMAT.ignore = ignoreCB.Checked;
         }
     }
 }

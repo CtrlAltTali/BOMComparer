@@ -19,27 +19,25 @@ namespace BOMComparer
     {
         public static bool created = false;
         public static bool compared = false;
-        public static string master_prefix = "_master";
-        public static string new_prefix = "_new";
         private static string[][] formats = new string[2][];
         static private void InitFormats()
         {
             formats[0] = new string[5];
             formats[1] = new string[5];
             
-            formats[0][0] = TABLEFORMAT.userChosenCoulomnName["ReferenceMBOM"]+ master_prefix;
-            formats[0][1] = TABLEFORMAT.userChosenCoulomnName["partNumMBOM"]+master_prefix;
+            formats[0][0] = TABLEFORMAT.userChosenCoulomnName["ReferenceMBOM"]+ TABLEFORMAT.suffixes[0];
+            formats[0][1] = TABLEFORMAT.userChosenCoulomnName["partNumMBOM"]+ TABLEFORMAT.suffixes[0];
             //formats[0][2] = TABLEFORMAT.userChosenCoulomnName["descMBOM"];
-            formats[0][2] = TABLEFORMAT.userChosenCoulomnName["ReferenceNBOM"]+new_prefix;
-            formats[0][3] = TABLEFORMAT.userChosenCoulomnName["partNumNBOM"]+new_prefix;
+            formats[0][2] = TABLEFORMAT.userChosenCoulomnName["ReferenceNBOM"]+ TABLEFORMAT.suffixes[1];
+            formats[0][3] = TABLEFORMAT.userChosenCoulomnName["partNumNBOM"]+ TABLEFORMAT.suffixes[1];
             //formats[0][5] = TABLEFORMAT.userChosenCoulomnName["descNBOM"];
             formats[0][4] = "status";
 
             formats[1][0] = TABLEFORMAT.userChosenCoulomnName["qtyMBOM"];
-            formats[1][1] = TABLEFORMAT.userChosenCoulomnName["partNumMBOM"]+master_prefix;
+            formats[1][1] = TABLEFORMAT.userChosenCoulomnName["partNumMBOM"]+ TABLEFORMAT.suffixes[0];
             //formats[1][2] = TABLEFORMAT.userChosenCoulomnName["descMBOM"];
             formats[1][2] = TABLEFORMAT.userChosenCoulomnName["qtyNBOM"];
-            formats[1][3] = TABLEFORMAT.userChosenCoulomnName["partNumNBOM"]+new_prefix;
+            formats[1][3] = TABLEFORMAT.userChosenCoulomnName["partNumNBOM"]+ TABLEFORMAT.suffixes[1];
             //formats[1][5] = TABLEFORMAT.userChosenCoulomnName["descNBOM"];
             formats[1][4] = "delta";
 
@@ -96,15 +94,15 @@ namespace BOMComparer
                 TABLEFORMAT.userChosenCoulomnName["qtyMBOM"] = "qty_master";
                 //if (dtset.Tables[0].TableName == "Change in References")
                 //{
-                    dtset.Tables[0].Columns[0].ColumnName +=master_prefix;
-                    dtset.Tables[0].Columns[1].ColumnName += master_prefix;
-                    dtset.Tables[0].Columns[2].ColumnName += new_prefix;
-                    dtset.Tables[0].Columns[3].ColumnName += new_prefix;
+                    dtset.Tables[0].Columns[0].ColumnName += TABLEFORMAT.suffixes[0];
+                    dtset.Tables[0].Columns[1].ColumnName += TABLEFORMAT.suffixes[0];
+                    dtset.Tables[0].Columns[2].ColumnName += TABLEFORMAT.suffixes[1];
+                    dtset.Tables[0].Columns[3].ColumnName += TABLEFORMAT.suffixes[1];
                 //}
                 //else if (dtset.Tables[0].TableName == "Material Change")
                 //{
-                    dtset.Tables[1].Columns[1].ColumnName += master_prefix;
-                    dtset.Tables[1].Columns[3].ColumnName += new_prefix;
+                    dtset.Tables[1].Columns[1].ColumnName += TABLEFORMAT.suffixes[0];
+                    dtset.Tables[1].Columns[3].ColumnName += TABLEFORMAT.suffixes[1];
                 //}
                 InitFormats();
                 bool a = SetOrdinalByFormat(dtset, 1);
@@ -183,10 +181,10 @@ namespace BOMComparer
         {
             if (name.Contains("qty"))
                 return name;
-            else if (name.Contains(master_prefix))
-                name = name.Replace(master_prefix, "");
-            else if (name.Contains(new_prefix))
-                name = name.Replace(new_prefix, "");
+            else if (name.Contains(TABLEFORMAT.suffixes[0]))
+                name = name.Replace(TABLEFORMAT.suffixes[0], "");
+            else if (name.Contains(TABLEFORMAT.suffixes[1]))
+                name = name.Replace(TABLEFORMAT.suffixes[1], "");
             return name;
         }
         /// <summary>
