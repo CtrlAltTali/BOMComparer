@@ -208,7 +208,7 @@
             this.Controls.Add(this.importmbBTN);
             this.Controls.Add(this.dataGridView1);
             this.Name = "Form1";
-            this.Text = "BOMComparer v1.031";
+            this.Text = "BOMComparer v1.04";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
             this.ResumeLayout(false);

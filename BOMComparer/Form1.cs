@@ -221,6 +221,20 @@ namespace BOMComparer
             results.Tables.Add(material);
             results.Tables[1].TableName = "Material Change";
 
+
+            //write the name of file at the beginning of the excel
+            results.Tables[0].Rows.Add(safeFileNames[0], "", safeFileNames[1]);
+            DataRow first = results.Tables[0].NewRow();
+            first.ItemArray = results.Tables[0].Rows[results.Tables[0].Rows.Count - 1].ItemArray;
+            results.Tables[0].Rows.Remove(results.Tables[0].Rows[results.Tables[0].Rows.Count - 1]);
+            results.Tables[0].Rows.InsertAt(first, 0);
+
+            results.Tables[1].Rows.Add(null,safeFileNames[0],null,safeFileNames[1]);
+            first = results.Tables[1].NewRow();
+            first.ItemArray = results.Tables[1].Rows[results.Tables[1].Rows.Count - 1].ItemArray;
+            results.Tables[1].Rows.Remove(results.Tables[1].Rows[results.Tables[1].Rows.Count - 1]);
+            results.Tables[1].Rows.InsertAt(first, 0);
+
             //export the dataset to a new excel file
             string reportFileName = currentDate + "_" + currenntTime + /*"_" + safeFileNames[0] +*/ "_" + safeFileNames[1] + "_Report.xlsx";
             string resultpath = SQLhelper.ExportFile(results,reportFileName, 1, newDirpath);
@@ -275,6 +289,7 @@ namespace BOMComparer
         private void ignoreCB_CheckedChanged(object sender, EventArgs e)
         {
             TABLEFORMAT.ignore = ignoreCB.Checked;
+            compareBTN.Enabled = ignoreCB.Checked;
         }
     }
 }
