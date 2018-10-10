@@ -9,6 +9,7 @@ namespace BOMComparer
 {
     static class TABLEFORMAT
     {
+
         static public string[] masterBOMcols;
         static public string[] newBOMcols;
         static public Dictionary<string, int> userChosenIndex;

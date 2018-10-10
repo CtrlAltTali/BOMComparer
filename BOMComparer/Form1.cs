@@ -28,6 +28,9 @@ namespace BOMComparer
         bool compared = false;
         string newDirpath = "";
         string basedir = "";
+        string[] safeFileNames = new string[2];
+        string currentDate;
+        string currenntTime;
 
         string[] tablenames = new string[2] { "Master BOM", "New BOM" };
         public Form1()
@@ -94,35 +97,47 @@ namespace BOMComparer
         {
 
             //make new dir to the new files
-            string currentDate = DateTime.Now.ToString("dd-MM-yyyy");
-            string currenntTime = DateTime.Now.ToString("hh:mm:ss").Replace(':', '-');
-            newDirpath = Path.Combine(basedir, currentDate + "_" + currenntTime + "_" + bnameTB.Text + "_");
+            //int i = filepaths[0].LastIndexOf("\\");
+
+            safeFileNames[0] = Path.GetFileNameWithoutExtension(filepaths[0]);
+            //i = filepaths[1].LastIndexOf("\\");
+
+            safeFileNames[1] = Path.GetFileNameWithoutExtension(filepaths[1]);
+
+            currentDate = DateTime.Now.ToString("yyyy-MM-dd");
+            currenntTime = DateTime.Now.ToString("hh:mm:ss").Replace(':', '-');
+
+            string dir = currentDate + "_" + currenntTime + "_" + safeFileNames[0] /*+ "_" + safeFileNames[1]*/ + "_" + bnameTB.Text + "_";
+
+            newDirpath = Path.Combine(basedir, dir);
             Directory.CreateDirectory(newDirpath);
 
             //open the field mapper window
             MasterProps f = new MasterProps();
             f.ShowDialog();
-
+            string improvedpath = "";
             //if user mapped all fields
             if (TABLEFORMAT.UserChose)
             {
                 //build the new tables
                 this.built1 = datagrid.BuildTable(dataGridView1, 0);
                 built2 = datagrid.BuildTable(dataGridView2, 1);
-                string improvedpath = newDirpath;
+
                 //if at least one table is illegal
                 if (datagrid.errors.Tables[0].Rows.Count != 0 || datagrid.errors.Tables[1].Rows.Count != 0)
                 {
 
-                    //disable the comparison
-                    compareBTN.Enabled = true;
                     //export the error table to a new excel file
+                    string errFile = currentDate + "_" + currenntTime + "_" + safeFileNames[0] /*+ "_" + safeFileNames[1]*/ + "_Errors.xlsx";
+                    datagrid.errors.Tables[0].TableName = safeFileNames[0];
+                    datagrid.errors.Tables[1].TableName = safeFileNames[1];
 
-                    string resultpath = SQLhelper.ExportFile(datagrid.errors, "Errors.xlsx", 2, newDirpath);
+                    string resultpath = SQLhelper.ExportFile(datagrid.errors,errFile, 2, newDirpath);
                     improvedpath = newDirpath + "-Error";
                     System.IO.Directory.Move(newDirpath, improvedpath);
                     if (ignoreCB.Checked)
                     {
+                        compareBTN.Enabled = true;
                         MessageBox.Show("You are allowed to compare, but the comparison won't be reliable.", "Warning!");
                     }
                 }
@@ -137,7 +152,7 @@ namespace BOMComparer
                 //export the new tables into the new dir
                 newFilepaths[0] = datagrid.Export(0, filepaths[0].Substring(filepaths[0].LastIndexOf('\\') + 1), 0, newDirpath);
                 newFilepaths[1] = datagrid.Export(1, filepaths[1].Substring(filepaths[1].LastIndexOf('\\') + 1), 0, newDirpath);
-
+                
 
 
 
@@ -207,7 +222,8 @@ namespace BOMComparer
             results.Tables[1].TableName = "Material Change";
 
             //export the dataset to a new excel file
-            string resultpath = SQLhelper.ExportFile(results, "Comparison_Report.xlsx", 1, newDirpath);
+            string reportFileName = currentDate + "_" + currenntTime + /*"_" + safeFileNames[0] +*/ "_" + safeFileNames[1] + "_Report.xlsx";
+            string resultpath = SQLhelper.ExportFile(results,reportFileName, 1, newDirpath);
             compareBTN.Enabled = false;
         }
 

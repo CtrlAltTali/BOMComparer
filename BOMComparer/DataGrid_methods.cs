@@ -29,8 +29,8 @@ namespace BOMComparer
         public string OpenFileManager()
         {
             string filepath = "";
-            // Displays an OpenFileDialog so the user can select a Cursor.  
-            OpenFileDialog openFileDialog = new OpenFileDialog();
+             // Displays an OpenFileDialog so the user can select a Cursor.  
+             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Excel Files|*.xlsx;*.xls;";
             openFileDialog.Title = "Select an Excel File";
 

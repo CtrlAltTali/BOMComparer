@@ -25,7 +25,7 @@ namespace BOMComparer {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("C:\\\\")]
+        [global::System.Configuration.DefaultSettingValueAttribute(".\\")]
         public string outputPath {
             get {
                 return ((string)(this["outputPath"]));
